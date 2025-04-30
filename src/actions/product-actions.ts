@@ -1,4 +1,3 @@
-
 'use server';
 
 import prisma from "@/lib/prisma";
@@ -8,12 +7,18 @@ import * as yup from "yup";
 interface ProductData {
     nombre: string;
     slug: string;
+    description?: string;
+    inStock?: number;
+    price?: number;
     categoriasIds: string[];
 }
 
 const schema = yup.object().shape({
     nombre: yup.string().required(),
     slug: yup.string().required(),
+    description: yup.string(),
+    inStock: yup.number().min(0),
+    price: yup.number().min(0),
     categoriasIds: yup.array().of(yup.string()),
 });
 
@@ -24,6 +29,9 @@ export async function createProduct(
     const productData: ProductData = {
         nombre: formData.get("nombre") as string,
         slug: formData.get("slug") as string,
+        description: formData.get("description") as string || undefined,
+        inStock: formData.get("inStock") ? Number(formData.get("inStock")) : undefined,
+        price: formData.get("price") ? Number(formData.get("price")) : undefined,
         categoriasIds: formData.getAll("categorias").map(id => id.toString()),
     };
 
@@ -34,6 +42,9 @@ export async function createProduct(
             data: {
                 nombre: productData.nombre,
                 slug: productData.slug,
+                description: productData.description,
+                inStock: productData.inStock,
+                price: productData.price,
                 categorias: 
                     productData.categoriasIds.length > 0
                         ? {
@@ -52,6 +63,9 @@ export async function createProduct(
             fieldData: {
                 nombre: "",
                 slug: "",
+                description: "",
+                inStock: undefined,
+                price: undefined,
                 categoriasIds: [],
             },
         };
@@ -83,6 +97,9 @@ export async function updateProduct(
     const productData: ProductData = {
         nombre: formData.get("nombre") as string,
         slug: formData.get("slug") as string,
+        description: formData.get("description") as string || undefined,
+        inStock: formData.get("inStock") ? Number(formData.get("inStock")) : undefined,
+        price: formData.get("price") ? Number(formData.get("price")) : undefined,
         categoriasIds: formData.getAll("categorias").map(id => id.toString()),
     };
 
@@ -94,6 +111,9 @@ export async function updateProduct(
             data: {
                 nombre: productData.nombre,
                 slug: productData.slug,
+                description: productData.description,
+                inStock: productData.inStock,
+                price: productData.price,
                 categorias: {
                     set: [], // First disconnect all categories
                     connect: productData.categoriasIds.map((id) => ({ id })), // Then connect the new ones

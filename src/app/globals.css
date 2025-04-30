@@ -121,16 +121,51 @@ section {
   @apply p-4 border-t border-gray-200 dark:border-gray-700;
 }
 
+.summary-details {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.summary-field {
+  margin-bottom: 1rem;
+}
+
+.summary-field:last-child {
+  margin-bottom: 0;
+}
+
+.summary-field-label {
+  font-weight: 600;
+  color: #4b5563;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.summary-field-value {
+  color: #1f2937;
+}
+
 .summary-tags-container {
-  @apply flex flex-wrap gap-2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
 }
 
 .summary-tag {
-  @apply px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 rounded-full;
+  background-color: #e5e7eb;
+  color: #4b5563;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
 }
 
 .summary-empty-message {
-  @apply text-gray-500 dark:text-gray-400 text-sm;
+  color: #6b7280;
+  font-style: italic;
+  margin-top: 0.25rem;
 }
 
 /* Form List Container Styles */

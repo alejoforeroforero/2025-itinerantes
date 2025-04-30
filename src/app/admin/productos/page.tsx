@@ -1,4 +1,6 @@
 
+export const dynamic = 'force-dynamic';
+
 import { getCategories } from "@/actions/category-actions";
 import { getProducts } from "@/actions/product-actions";
 import { ProductForm } from "@/components";

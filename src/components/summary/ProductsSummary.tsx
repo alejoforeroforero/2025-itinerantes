@@ -6,6 +6,12 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 interface Product {
   id: string;
   nombre: string;
+  description?: string;
+  inStock?: number;
+  price?: number;
+  slug: string;
+  createdAt: Date;
+  updatedAt: Date;
   categorias: {
     id: string;
     nombre: string;
@@ -49,19 +55,64 @@ export function ProductsSummary({ products }: ProductsSummaryProps) {
 
             {expandedProducts.has(product.id) && (
               <div className="summary-content">
-                {product.categorias.length > 0 ? (
-                  <div className="summary-tags-container">
-                    {product.categorias.map((category) => (
-                      <span key={category.id} className="summary-tag">
-                        {category.nombre}
-                      </span>
-                    ))}
+                <div className="summary-details">
+                  {product.description && (
+                    <div className="summary-field">
+                      <span className="summary-field-label">Descripción:</span>
+                      <p className="summary-field-value">{product.description}</p>
+                    </div>
+                  )}
+                  
+                  {product.inStock !== undefined && (
+                    <div className="summary-field">
+                      <span className="summary-field-label">Stock:</span>
+                      <span className="summary-field-value">{product.inStock} unidades</span>
+                    </div>
+                  )}
+                  
+                  {product.price !== undefined && product.price !== null && (
+                    <div className="summary-field">
+                      <span className="summary-field-label">Precio:</span>
+                      <span className="summary-field-value">${product.price.toFixed(2)}</span>
+                    </div>
+                  )}
+
+                  <div className="summary-field">
+                    <span className="summary-field-label">Slug:</span>
+                    <span className="summary-field-value">{product.slug}</span>
                   </div>
-                ) : (
-                  <p className="summary-empty-message">
-                    No hay categorías en este producto
-                  </p>
-                )}
+
+                  <div className="summary-field">
+                    <span className="summary-field-label">Creado:</span>
+                    <span className="summary-field-value">
+                      {new Date(product.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  <div className="summary-field">
+                    <span className="summary-field-label">Última actualización:</span>
+                    <span className="summary-field-value">
+                      {new Date(product.updatedAt).toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  <div className="summary-field">
+                    <span className="summary-field-label">Categorías:</span>
+                    {product.categorias.length > 0 ? (
+                      <div className="summary-tags-container">
+                        {product.categorias.map((category) => (
+                          <span key={category.id} className="summary-tag">
+                            {category.nombre}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="summary-empty-message">
+                        No hay categorías en este producto
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </div>
