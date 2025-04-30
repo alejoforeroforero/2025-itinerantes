@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { ListProducts } from "@/components";
 
 export default function Home() {
