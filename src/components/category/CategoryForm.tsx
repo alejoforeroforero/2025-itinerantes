@@ -54,25 +54,25 @@ export function CategoryForm({ categories, products }: CategoryFormProps) {
 
   return (
     <div className="summary-container">
-      <div className="mb-8 p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800">
+      <div className="form-list-container">
         <button 
           onClick={() => setIsListExpanded(!isListExpanded)}
-          className="w-full flex items-center justify-between mb-4 text-sm text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400"
+          className="form-list-toggle"
         >
           <span className="font-medium">Mostrar categorías ({categories.length})</span>
           {isListExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
         </button>
         
         {isListExpanded && (
-          <div className="flex flex-wrap gap-2">
+          <div className="form-list-items">
             {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => handleCategoryClick(category)}
-                className={`px-3 py-1.5 rounded-full transition-colors ${
+                className={`form-list-item ${
                   selectedCategoryId === category.id 
-                    ? 'bg-blue-500 text-white hover:bg-blue-600' 
-                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600'
+                    ? 'form-list-item-selected' 
+                    : ''
                 }`}
               >
                 {category.nombre}
@@ -114,7 +114,7 @@ export function CategoryForm({ categories, products }: CategoryFormProps) {
               id="products"
               name="products" 
               multiple 
-              className="form-select min-h-[120px]"
+              className="form-select-multiple"
             >
               {products.map((product) => (
                 <option key={product.id} value={product.id}>
@@ -127,10 +127,10 @@ export function CategoryForm({ categories, products }: CategoryFormProps) {
           {data?.message && <p className="form-success">{data.message}</p>}
           {data?.error && <p className="form-error">{data.error}</p>}
           
-          <div className="flex gap-2">
+          <div className="form-action-buttons">
             <button 
               type="submit"
-              className="form-button"
+              className="form-action-button-primary"
               disabled={isPending}
             >
               {isPending ? "Procesando..." : selectedCategoryId ? "Actualizar Categoría" : "Crear Categoría"}
@@ -140,7 +140,7 @@ export function CategoryForm({ categories, products }: CategoryFormProps) {
               <button 
                 type="button"
                 onClick={handleCancelEdit}
-                className="form-button bg-gray-500"
+                className="form-action-button-cancel"
               >
                 Cancelar
               </button>
