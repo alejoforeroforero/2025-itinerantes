@@ -12,7 +12,12 @@ export default async function ProductosPage() {
   return (
     <div className="p-4">
       <ProductForm 
-        products={products} 
+        products={products.map(product => ({
+          ...product,
+          description: product.description ?? undefined,
+          inStock: product.inStock ?? undefined,
+          price: product.price ?? undefined
+        }))} 
         categories={categories}
         mode="create"
       />

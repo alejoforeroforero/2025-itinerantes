@@ -1,8 +1,10 @@
+"use client";
 
-'use client';
-
-import { useState, useEffect } from 'react';
-import { getCategoriesWithProducts, getProductsWithCategories } from "@/actions/summary-actions";
+import { useState, useEffect } from "react";
+import {
+  getCategoriesWithProducts,
+  getProductsWithCategories,
+} from "@/actions/summary-actions";
 import { CategorySummary, ProductsSummary } from "@/components";
 
 interface CategoryResponse {
@@ -25,6 +27,9 @@ interface ProductResponse {
   data: Array<{
     id: string;
     nombre: string;
+    slug: string;
+    createdAt: string;
+    updatedAt: string;
     categorias: Array<{
       id: string;
       nombre: string;
@@ -36,8 +41,10 @@ interface ProductResponse {
 }
 
 export default function AdminPage() {
-  const [categoriesResponse, setCategoriesResponse] = useState<CategoryResponse | null>(null);
-  const [productsResponse, setProductsResponse] = useState<ProductResponse | null>(null);
+  const [categoriesResponse, setCategoriesResponse] =
+    useState<CategoryResponse | null>(null);
+  const [productsResponse, setProductsResponse] =
+    useState<ProductResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchCategories = async () => {
@@ -48,12 +55,12 @@ export default function AdminPage() {
         total: response.total ?? 0,
       });
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
       setCategoriesResponse({
         success: false,
         data: null,
         total: 0,
-        error: 'Error al cargar las categorías'
+        error: "Error al cargar las categorías",
       });
     }
   };
@@ -62,16 +69,22 @@ export default function AdminPage() {
     try {
       const response = await getProductsWithCategories();
       setProductsResponse({
-        ...response,
+        success: response.success,
+        data: response.data?.map(product => ({
+          ...product,
+          createdAt: product.createdAt.toString(),
+          updatedAt: product.updatedAt.toString()
+        })) ?? null,
         total: response.total ?? 0,
+        error: response.error
       });
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
       setProductsResponse({
         success: false,
         data: null,
         total: 0,
-        error: 'Error al cargar los productos'
+        error: "Error al cargar los productos",
       });
     }
   };
@@ -79,10 +92,7 @@ export default function AdminPage() {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      await Promise.all([
-        fetchCategories(),
-        fetchProducts()
-      ]);
+      await Promise.all([fetchCategories(), fetchProducts()]);
       setIsLoading(false);
     };
 
@@ -105,7 +115,9 @@ export default function AdminPage() {
         <div className="text-red-500 p-4 rounded-lg border border-red-300 bg-[var(--background)]">
           <h2 className="text-2xl font-bold mb-2">Error en el resumen</h2>
           <p className="text-sm">
-            {categoriesResponse?.error || productsResponse?.error || 'Error desconocido'}
+            {categoriesResponse?.error ||
+              productsResponse?.error ||
+              "Error desconocido"}
           </p>
         </div>
       </div>
@@ -129,9 +141,7 @@ export default function AdminPage() {
               {categoriesResponse.total || 0}
             </span>
           </div>
-          <CategorySummary 
-            categories={categoriesResponse.data || []}
-          />
+          <CategorySummary categories={categoriesResponse.data || []} />
         </div>
 
         <div className="p-6 rounded-lg border border-gray-300 dark:border-gray-600 bg-[var(--background)]">
@@ -141,9 +151,11 @@ export default function AdminPage() {
               {productsResponse.total || 0}
             </span>
           </div>
-          <ProductsSummary 
-            products={productsResponse.data || []}
-          />
+          <ProductsSummary products={productsResponse.data?.map(product => ({
+            ...product,
+            createdAt: new Date(product.createdAt),
+            updatedAt: new Date(product.updatedAt)
+          })) || []} />
         </div>
       </div>
     </div>
