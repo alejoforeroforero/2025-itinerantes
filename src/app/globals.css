@@ -240,3 +240,7 @@ section {
     dark:focus:ring-blue-500 dark:focus:border-blue-500
     min-h-[120px];
 }
+
+.nav-bar{
+  @apply flex justify-center;
+}

@@ -1,7 +1,27 @@
-import { getProducts } from "@/actions/product-actions";
+import Link from "next/link";
 
-export async function ListProducts() {
-  const products = await getProducts();
+interface Categoria {
+  id: string;
+  nombre: string;
+  slug:string;
+}
+
+interface Product {
+  id: string;
+  nombre: string;
+  description: string | null;
+  slug: string;
+  price: number | null;
+  inStock: number | null;
+  categorias?: Categoria[];
+}
+
+interface ListProductsProps {
+  products: Product[];
+}
+
+export async function ListProducts({ products }: ListProductsProps) {
+  // const products = await getProducts();
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
@@ -28,9 +48,9 @@ export async function ListProducts() {
           </div>
           <div className="p-4">
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              {product.nombre}
+              <Link href={`/producto/${product.slug}`}>{product.nombre}</Link>
             </h3>
-            
+
             {product.description && (
               <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                 {product.description}
@@ -50,25 +70,30 @@ export async function ListProducts() {
                 </p>
               )}
 
-              {product.categorias.length > 0 && (
+              {product.categorias && product.categorias.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {product.categorias.map((categoria) => (
                     <span
                       key={categoria.id}
                       className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
                     >
-                      {categoria.nombre}
+                      
+
+                      <Link href={`/categoria/${categoria.slug}`}> {categoria.nombre}</Link>
+
                     </span>
                   ))}
                 </div>
               )}
-              {product.inStock !== undefined && product.inStock !== null && product.inStock > 0 && (
-                <div className="mt-3">
-                  <button className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200">
-                    Agregar producto
-                  </button>
-                </div>
-              )}
+              {product.inStock !== undefined &&
+                product.inStock !== null &&
+                product.inStock > 0 && (
+                  <div className="mt-3">
+                    <button className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200">
+                      Agregar producto
+                    </button>
+                  </div>
+                )}
             </div>
           </div>
         </div>
