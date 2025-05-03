@@ -1,15 +1,14 @@
 export const dynamic = 'force-dynamic';
 
 import { getProducts } from "@/actions/product-actions";
-import { ListProducts } from "@/components";
-
+import { ListProducts, Greet } from "@/components";
 
 export default async function Home() {
-  const products = await getProducts()
-  
+  const products = await getProducts();
+
   return (
     <>
-      <h1 className="flex justify-center m-12">Bienvenidos a Cocinas itinerantes</h1>
+      <Greet />
       <ListProducts products={products} />
     </>
   );

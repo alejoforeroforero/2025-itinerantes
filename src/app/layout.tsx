@@ -1,7 +1,4 @@
 import type { Metadata } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/auth-options";
-import Link from "next/link";
 import { Navbar } from "@/components";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -26,26 +23,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession(authOptions);
-
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {session?.user?.email === process.env.ALLOWED_EMAIL}
-        {
-          <>
-            <Link className="link-nav" href="/admin">
-              Go to admin
-            </Link>
-            <Link className="link-nav" href="/">
-              Go to home
-            </Link>
-          </>
-        }
         <Navbar />
-
         {children}
       </body>
     </html>

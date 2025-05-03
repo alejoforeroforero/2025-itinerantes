@@ -1,87 +1,67 @@
-
 'use server';
 
 import prisma from "@/lib/prisma";
 
-export async function getCategoriesWithProducts(page = 1, limit = 10) {
+export async function getCategoriesWithProducts() {
     try {
-        const skip = (page - 1) * limit;
-        const [categoriesWithProducts, total] = await Promise.all([
-            prisma.categoria.findMany({
-                skip,
-                take: limit,
-                include: {
-                    productos: {
-                        select: {
-                            id: true,
-                            nombre: true,
-                            slug: true,
-                        }
-                    },
-                },
-                orderBy: {
-                    nombre: 'asc'
-                }
-            }),
-            prisma.categoria.count()
-        ]);
-
-        return {
-            success: true,
-            data: categoriesWithProducts,
-            total,
-            currentPage: page,
-            totalPages: Math.ceil(total / limit),
-            error: null,
-        };
+      const categories = await prisma.categoria.findMany({
+        include: {
+          productos: {
+            select: {
+              id: true,
+              nombre: true,
+              slug: true,
+              inStock: true,
+              price: true,
+            },
+          },
+        },
+      });
+      
+      return {
+        success: true,
+        data: categories,
+        total: categories.length,
+        error: null,
+      };
     } catch (error) {
-        console.error("Error fetching categories with products:", error);
-        return {
-            success: false,
-            data: null,
-            error: "Error al obtener las categorías con productos",
-        };
+      console.error('Error fetching categories:', error);
+      return {
+        success: false,
+        data: null,
+        total: 0,
+        error: 'Failed to fetch categories',
+      };
     }
-}
-
-export async function getProductsWithCategories(page = 1, limit = 10) {
+  }
+  
+  export async function getProductsWithCategories() {
     try {
-        const skip = (page - 1) * limit;
-        const [productsWithCategories, total] = await Promise.all([
-            prisma.producto.findMany({
-                skip,
-                take: limit,
-                include: {
-                    categorias: {
-                        select: {
-                            id: true,
-                            nombre: true,
-                            slug: true,
-                        }
-                    },
-                },
-                orderBy: {
-                    nombre: 'asc'
-                }
-            }),
-            prisma.producto.count()
-        ]);
-
-        return {
-            success: true,
-            data: productsWithCategories,
-            total,
-            currentPage: page,
-            totalPages: Math.ceil(total / limit),
-            error: null,
-        };
+      const products = await prisma.producto.findMany({
+        include: {
+          categorias: {
+            select: {
+              id: true,
+              nombre: true,
+              slug: true,
+            },
+          },
+        },
+      });
+      
+      return {
+        success: true,
+        data: products,
+        total: products.length,
+        error: null,
+      };
     } catch (error) {
-        console.error("Error fetching products with categories:", error);
-        return {
-            success: false,
-            data: null,
-            error: "Error al obtener los productos con categorías",
-        };
+      console.error('Error fetching products:', error);
+      return {
+        success: false,
+        data: null,
+        total: 0,
+        error: 'Failed to fetch products',
+      };
     }
-}
-
+  }
