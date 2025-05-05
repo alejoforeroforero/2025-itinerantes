@@ -1,5 +1,7 @@
 import { getUserSession } from "@/actions/auth-actions";
+
 import Link from "next/link";
+import { NavCount } from "./NavCount";
 
 export const Navbar = async () => {
   const session = await getUserSession();
@@ -13,9 +15,10 @@ export const Navbar = async () => {
           </Link>
         </li>
         <li>
-          <Link className="mx-10" href="/">
+          <Link className="mx-10" href="/carrito">
             Cart
           </Link>
+          <NavCount />
         </li>
         {session?.user?.email === process.env.ALLOWED_EMAIL && (
           <li>
