@@ -1,6 +1,7 @@
 "use client";
 import useStore from "@/store/store";
 import { Trash2, Plus, Minus } from "lucide-react";
+import Link from "next/link";
 
 export default function CartPage() {
   const products = useStore((state) => state.products);
@@ -9,10 +10,14 @@ export default function CartPage() {
   const getTotalQuantity = useStore((state) => state.getTotalQuantity);
   const getTotalPrice = useStore((state) => state.getTotalPrice);
 
+  // const handleCheckout = () => {
+   
+  // }
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1>Tu Carrito</h1>
-      
+
       {products.length === 0 ? (
         <div className="text-center py-12">
           <p>Tu carrito está vacío</p>
@@ -70,20 +75,21 @@ export default function CartPage() {
               </div>
             </div>
           ))}
-          
+
           <div className="flex flex-col space-y-4 mt-8 pt-6 border-t border-gray-200">
             <div className="flex justify-between items-center">
               <div className="space-y-2">
-                <p>
-                  Total de productos: {getTotalQuantity()}
-                </p>
+                <p>Total de productos: {getTotalQuantity()}</p>
                 <p className="text-2xl font-bold">
                   Precio total: ${getTotalPrice().toFixed(2)}
                 </p>
               </div>
-              <button className="bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition-colors font-medium">
-                Proceder al pago
-              </button>
+              <Link
+                className="bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition-colors font-medium"
+                href="/checkout/address"
+              >
+                Checkout
+              </Link>
             </div>
           </div>
         </div>
