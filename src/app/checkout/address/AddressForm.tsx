@@ -1,7 +1,6 @@
 "use client";
 
-import { useAddressStore } from "@/store";
-import clsx from "clsx";
+import { useAddressStore } from "@/store/address-store";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
@@ -153,9 +152,7 @@ export const AddressForm = () => {
           <button
             disabled={!isValid}
             type="submit"
-            className={clsx("form-button", {
-              "opacity-50 cursor-not-allowed": !isValid,
-            })}
+            className="form-action-button-primary flex w-full sm:w-1/2 justify-center"
           >
             Siguiente
           </button>
