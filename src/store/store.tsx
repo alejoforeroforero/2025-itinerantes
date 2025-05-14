@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface ProductCart {
   id: string;
@@ -14,7 +15,6 @@ interface ProductState {
   clearCart: () => void;
   getTotalQuantity: () => number;
   getTotalPrice: () => number;
-  setProducts: (products: ProductCart[]) => void;
 }
 
 const addProduct = (product: ProductCart) => (state: ProductState) => {
@@ -48,29 +48,36 @@ const removeProduct = (product: ProductCart) => (state: ProductState) => {
   return { products: state.products };
 };
 
-const useStore = create<ProductState>()((set) => ({
-  products: [],
-  addProduct: (product: ProductCart) => set(addProduct(product)),
-  removeProduct: (product: ProductCart) => set(removeProduct(product)),
-  clearCart: () => set({ products: [] }),
-  getTotalQuantity: (): number => {
-    return useStore
-      .getState()
-      .products.reduce(
-        (total: number, product: ProductCart) => total + product.quantity,
-        0
-      );
-  },
-  getTotalPrice: (): number => {
-    return useStore
-      .getState()
-      .products.reduce(
-        (total: number, product: ProductCart) =>
-          total + product.price * product.quantity,
-        0
-      );
-  },
-  setProducts: (products: ProductCart[]) => set({ products }),
-}));
+const useStore = create<ProductState>()(
+  persist(
+    (set) => ({
+      products: [],
+      addProduct: (product: ProductCart) => set(addProduct(product)),
+      removeProduct: (product: ProductCart) => set(removeProduct(product)),
+      clearCart: () => set({ products: [] }),
+      getTotalQuantity: (): number => {
+        return useStore
+          .getState()
+          .products.reduce(
+            (total: number, product: ProductCart) => total + product.quantity,
+            0
+          );
+      },
+      getTotalPrice: (): number => {
+        return useStore
+          .getState()
+          .products.reduce(
+            (total: number, product: ProductCart) =>
+              total + product.price * product.quantity,
+            0
+          );
+      },
+    }),
+    {
+      name: 'cart-storage', // unique name for localStorage key
+      partialize: (state) => ({ products: state.products }), // only persist the products array
+    }
+  )
+);
 
 export default useStore;
