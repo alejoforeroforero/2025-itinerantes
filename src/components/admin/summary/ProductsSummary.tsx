@@ -42,7 +42,7 @@ export function ProductsSummary({ products }: ProductsSummaryProps) {
           <div key={product.id} className="summary-item">
             <button
               onClick={() => toggleProduct(product.id)}
-              className="summary-button"
+              className="summary-button cursor-pointer"
             >
               <h3 className="summary-title">
                 {product.nombre}

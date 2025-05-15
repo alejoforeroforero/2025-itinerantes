@@ -63,7 +63,7 @@ export function ListProducts({ products }: ListProductsProps) {
           </div>
           <div className="p-4">
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              <Link href={`/producto/${product.slug}`}>{product.nombre}</Link>
+              <Link className="cursor-pointer" href={`/producto/${product.slug}`}>{product.nombre}</Link>
             </h3>
             {product.description && (
               <p className="text-gray-600 text-sm mb-3 line-clamp-2">
@@ -91,7 +91,7 @@ export function ListProducts({ products }: ListProductsProps) {
                       key={categoria.id}
                       className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
                     >
-                      <Link href={`/categoria/${categoria.slug}`}>
+                      <Link className="cursor-pointer" href={`/categoria/${categoria.slug}`}>
                         {" "}
                         {categoria.nombre}
                       </Link>
@@ -107,7 +107,7 @@ export function ListProducts({ products }: ListProductsProps) {
                       onClick={() => {
                         handleAddToCart(product);
                       }}
-                      className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
+                      className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 cursor-pointer"
                     >
                       Agregar producto
                     </button>

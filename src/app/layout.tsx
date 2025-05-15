@@ -29,7 +29,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Navbar />
-        {children}
+        <section className="p-4">{children}</section>
       </body>
     </html>
   );

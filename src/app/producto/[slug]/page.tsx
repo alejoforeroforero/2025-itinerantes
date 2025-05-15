@@ -125,7 +125,7 @@ export default async function ProductPage({ params }: Props) {
                 disabled={!inStock || inStock <= 0}
                 className={`flex-1 px-6 py-3 rounded-md font-medium ${
                   inStock && inStock > 0
-                    ? "bg-indigo-600 hover:bg-indigo-700 text-white"
+                    ? "bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer"
                     : "bg-gray-300 cursor-not-allowed text-gray-500"
                 } transition-colors duration-200 text-center`}
               >

@@ -57,7 +57,7 @@ export function CategoryForm({ categories, products }: CategoryFormProps) {
       <div className="form-list-container">
         <button 
           onClick={() => setIsListExpanded(!isListExpanded)}
-          className="form-list-toggle"
+          className="form-list-toggle cursor-pointer"
         >
           <span className="font-medium">Mostrar categorías ({categories.length})</span>
           {isListExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -69,7 +69,7 @@ export function CategoryForm({ categories, products }: CategoryFormProps) {
               <button
                 key={category.id}
                 onClick={() => handleCategoryClick(category)}
-                className={`form-list-item ${
+                className={`form-list-item cursor-pointer ${
                   selectedCategoryId === category.id 
                     ? 'form-list-item-selected' 
                     : ''
@@ -130,7 +130,7 @@ export function CategoryForm({ categories, products }: CategoryFormProps) {
           <div className="form-action-buttons">
             <button 
               type="submit"
-              className="form-action-button-primary"
+              className="form-action-button-primary cursor-pointer"
               disabled={isPending}
             >
               {isPending ? "Procesando..." : selectedCategoryId ? "Actualizar Categoría" : "Crear Categoría"}
@@ -140,7 +140,7 @@ export function CategoryForm({ categories, products }: CategoryFormProps) {
               <button 
                 type="button"
                 onClick={handleCancelEdit}
-                className="form-action-button-cancel"
+                className="form-action-button-cancel cursor-pointer"
               >
                 Cancelar
               </button>

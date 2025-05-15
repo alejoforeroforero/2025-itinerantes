@@ -12,8 +12,12 @@ export const NavCount = () => {
   }, []);
 
   if (!mounted) {
-    return <span>0</span>;
+    return null;
   }
 
-  return <span>{totalQuantity}</span>;
+  return (
+    <span className="absolute top-3 right-1 bg-[var(--primary)] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+      {totalQuantity}
+    </span>
+  );
 };
