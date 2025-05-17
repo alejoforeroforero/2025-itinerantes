@@ -1,5 +1,6 @@
 "use client";
 import { useAddressStore } from "@/store/address-store";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
@@ -19,6 +20,8 @@ export const AddressForm = () => {
     reset,
   } = useForm<FormInputs>();
 
+  const router = useRouter();
+
   const setAddress = useAddressStore((state) => state.setAddress);
   const address = useAddressStore((state) => state.address);
 
@@ -31,7 +34,11 @@ export const AddressForm = () => {
   const onSubmit = (data: FormInputs) => {
     console.log(data);
     setAddress(data);
+    router.push("/checkout/order");
   };
+
+
+ 
 
   return (
     <div>
