@@ -28,6 +28,9 @@ export default async function AdminLayout({
         <Link className="link-nav" href="/admin/productos">
           Productos
         </Link>
+        <Link className="link-nav" href="/admin/orders">
+          Pedidos
+        </Link>
       </header>
       <main className="mt-4">{children}</main>
     </div>

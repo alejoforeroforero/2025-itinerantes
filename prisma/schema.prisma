@@ -70,16 +70,16 @@ model VerificationToken {
 }
 
 model Producto {
-  id          String  @id @default(uuid())
+  id          String      @id @default(uuid())
   nombre      String
   description String?
   inStock     Int?
   price       Float?
-  slug        String  @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
+  slug        String      @unique
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   categorias  Categoria[]
+  orderItems  OrderItem[]
 }
 
 model Categoria {
@@ -89,6 +89,35 @@ model Categoria {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   productos   Producto[]
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  status          String      @default("PENDING")
+  total           Float
+  subTotal        Float
+  tax             Float
+  itemsInOrder    Int
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  firstName       String
+  lastName        String
+  address         String
+  city            String
+  phone           String
+  orderItems      OrderItem[]
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Producto @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
 }
 
 
