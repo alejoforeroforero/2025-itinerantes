@@ -44,6 +44,44 @@ export const placeOrder = async (
             };
         }
 
+        // First check for existing pending order with same products and address
+        const existingOrder = await prisma.order.findFirst({
+            where: {
+                status: 'PENDING',
+                firstName: address.firstName,
+                lastName: address.lastName,
+                address: address.address,
+                city: address.city,
+                phone: address.phone,
+                orderItems: {
+                    some: {
+                        productId: {
+                            in: storeProducts.map(p => p.id)
+                        }
+                    }
+                }
+            },
+            include: {
+                orderItems: true
+            }
+        });
+
+        if (existingOrder) {
+            // Verify if the order items match exactly
+            const orderItems = existingOrder.orderItems;
+            const isExactMatch = storeProducts.every(product => {
+                const orderItem = orderItems.find(item => item.productId === product.id);
+                return orderItem && orderItem.quantity === product.quantity;
+            });
+
+            if (isExactMatch && orderItems.length === storeProducts.length) {
+                return {
+                    ok: true,
+                    order: existingOrder
+                };
+            }
+        }
+
         // Get products from database
         const products = await prisma.producto.findMany({
             where: {

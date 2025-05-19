@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Navbar } from "@/components";
+import { Providers } from "@/components";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -28,8 +29,10 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
-        <section className="p-4">{children}</section>
+        <Providers>
+          <Navbar />
+          <section className="p-8">{children}</section>
+        </Providers>
       </body>
     </html>
   );
