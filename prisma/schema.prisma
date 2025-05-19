@@ -106,6 +106,7 @@ model Order {
   city            String
   phone           String
   orderItems      OrderItem[]
+  transactionId   String?
 }
 
 model OrderItem {

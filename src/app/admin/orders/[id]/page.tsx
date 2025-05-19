@@ -1,23 +1,21 @@
-export const dynamic = 'force-dynamic';
-
 import { getOrderById } from "@/actions/order-actions";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-interface Props {
-  params: {
-    id: string;
-  };
-}
+export default async function OrderDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params;
 
-export default async function OrderDetailsPage({ params }: Props) {
   try {
-    const order = await getOrderById(params.id);
+    const order = await getOrderById(id);
 
     return (
       <div className="p-4 max-w-4xl mx-auto">
         <div className="mb-6">
-          <Link 
+          <Link
             href="/admin/orders"
             className="text-[var(--primary)] hover:text-[var(--accent)] flex items-center gap-2"
           >
@@ -29,11 +27,19 @@ export default async function OrderDetailsPage({ params }: Props) {
           {/* Order Header */}
           <div className="bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] px-6 py-4">
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-[var(--background)]">Detalles del Pedido</h1>
-              <span className={`px-3 py-1 rounded-full text-sm font-semibold
-                ${order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
-                  order.status === 'COMPLETED' ? 'bg-green-100 text-green-800' : 
-                  'bg-gray-100 text-gray-800'}`}>
+              <h1 className="text-2xl font-bold text-[var(--background)]">
+                Detalles del Pedido
+              </h1>
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-semibold
+                ${
+                  order.status === "PENDING"
+                    ? "bg-yellow-100 text-yellow-800"
+                    : order.status === "COMPLETED"
+                    ? "bg-green-100 text-green-800"
+                    : "bg-gray-100 text-gray-800"
+                }`}
+              >
                 {order.status}
               </span>
             </div>
@@ -44,47 +50,91 @@ export default async function OrderDetailsPage({ params }: Props) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Customer Information */}
               <div className="space-y-4">
-                <h2 className="text-lg font-semibold text-[var(--primary)]">Información del Cliente</h2>
+                <h2 className="text-lg font-semibold text-[var(--primary)]">
+                  Información del Cliente
+                </h2>
                 <div className="space-y-2 text-[var(--foreground)]">
-                  <p><span className="font-medium">Nombre:</span> {order.firstName} {order.lastName}</p>
-                  <p><span className="font-medium">Teléfono:</span> {order.phone}</p>
-                  <p><span className="font-medium">Dirección:</span> {order.address}</p>
-                  <p><span className="font-medium">Ciudad:</span> {order.city}</p>
+                  <p>
+                    <span className="font-medium">Nombre:</span>{" "}
+                    {order.firstName} {order.lastName}
+                  </p>
+                  <p>
+                    <span className="font-medium">Teléfono:</span> {order.phone}
+                  </p>
+                  <p>
+                    <span className="font-medium">Dirección:</span>{" "}
+                    {order.address}
+                  </p>
+                  <p>
+                    <span className="font-medium">Ciudad:</span> {order.city}
+                  </p>
                 </div>
               </div>
 
               {/* Order Summary */}
               <div className="space-y-4">
-                <h2 className="text-lg font-semibold text-[var(--primary)]">Resumen del Pedido</h2>
+                <h2 className="text-lg font-semibold text-[var(--primary)]">
+                  Resumen del Pedido
+                </h2>
                 <div className="space-y-2 text-[var(--foreground)]">
-                  <p><span className="font-medium">ID del Pedido:</span> {order.id}</p>
-                  <p><span className="font-medium">Fecha:</span> {new Date(order.createdAt).toLocaleDateString()}</p>
-                  <p><span className="font-medium">Total de Items:</span> {order.itemsInOrder}</p>
-                  <p><span className="font-medium">Subtotal:</span> ${order.subTotal.toFixed(2)}</p>
-                  <p><span className="font-medium">Impuestos:</span> ${order.tax.toFixed(2)}</p>
-                  <p className="text-lg font-bold text-[var(--primary)]"><span className="font-medium">Total:</span> ${order.total.toFixed(2)}</p>
+                  <p>
+                    <span className="font-medium">ID del Pedido:</span>{" "}
+                    {order.id}
+                  </p>
+                  <p>
+                    <span className="font-medium">Fecha:</span>{" "}
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <span className="font-medium">Total de Items:</span>{" "}
+                    {order.itemsInOrder}
+                  </p>
+                  <p>
+                    <span className="font-medium">Subtotal:</span> $
+                    {order.subTotal.toFixed(2)}
+                  </p>
+                  <p>
+                    <span className="font-medium">Impuestos:</span> $
+                    {order.tax.toFixed(2)}
+                  </p>
+                  <p className="text-lg font-bold text-[var(--primary)]">
+                    <span className="font-medium">Total:</span> $
+                    {order.total.toFixed(2)}
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* Order Items */}
             <div className="mt-8">
-              <h2 className="text-lg font-semibold text-[var(--primary)] mb-4">Productos</h2>
+              <h2 className="text-lg font-semibold text-[var(--primary)] mb-4">
+                Productos
+              </h2>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-[var(--primary)]">
                   <thead className="bg-[var(--background)]">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--primary)] uppercase tracking-wider">Producto</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--primary)] uppercase tracking-wider">Precio</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--primary)] uppercase tracking-wider">Cantidad</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--primary)] uppercase tracking-wider">Subtotal</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--primary)] uppercase tracking-wider">
+                        Producto
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--primary)] uppercase tracking-wider">
+                        Precio
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--primary)] uppercase tracking-wider">
+                        Cantidad
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--primary)] uppercase tracking-wider">
+                        Subtotal
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-[var(--background)] divide-y divide-[var(--primary)]">
                     {order.orderItems.map((item) => (
                       <tr key={item.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-[var(--foreground)]">{item.product.nombre}</div>
+                          <div className="text-sm font-medium text-[var(--foreground)]">
+                            {item.product.nombre}
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--foreground)]">
                           ${item.price.toFixed(2)}
@@ -106,7 +156,7 @@ export default async function OrderDetailsPage({ params }: Props) {
       </div>
     );
   } catch (error) {
-    console.error('Error fetching order details:', error);
+    console.error("Error fetching order details:", error);
     notFound();
   }
-} 
+}
