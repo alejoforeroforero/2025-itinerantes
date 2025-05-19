@@ -109,36 +109,7 @@ export const placeOrder = async (
         );
 
         return await prisma.$transaction(async (tx) => {
-            // 1. Update product stock
-            const updatedProductsPromises = products.map(async (product) => {
-                const productQuantity = storeProducts
-                    .filter(p => p.id === product.id)
-                    .reduce((acc, item) => item.quantity + acc, 0);
-
-                if (productQuantity === 0) {
-                    throw new Error(`${product.nombre} has no quantity defined`);
-                }
-
-                return tx.producto.update({
-                    where: { id: product.id },
-                    data: {
-                        inStock: {
-                            decrement: productQuantity
-                        }
-                    }
-                });
-            });
-
-            const updatedProducts = await Promise.all(updatedProductsPromises);
-
-            // Verify no negative stock
-            updatedProducts.forEach(product => {
-                if (product.inStock! < 0) {
-                    throw new Error(`${product.nombre} has insufficient stock`);
-                }
-            });
-
-            // 2. Create order
+            // Create order without reducing stock
             const order = await tx.order.create({
                 data: {
                     total,
@@ -168,8 +139,7 @@ export const placeOrder = async (
 
             return {
                 ok: true,
-                order,
-                updatedProducts
+                order
             };
         });
 

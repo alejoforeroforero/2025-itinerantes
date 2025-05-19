@@ -104,6 +104,7 @@ model Order {
   firstName       String
   lastName        String
   address         String
+  country         String      @default("Colombia")
   city            String
   phone           String
   orderItems      OrderItem[]

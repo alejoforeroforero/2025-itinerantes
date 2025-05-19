@@ -8,6 +8,7 @@ type FormInputs = {
   firstName: string;
   lastName: string;
   address: string;
+  country: string;
   city: string;
   phone: string;
 };
@@ -36,9 +37,6 @@ export const AddressForm = () => {
     setAddress(data);
     router.push("/checkout/order");
   };
-
-
- 
 
   return (
     <div>
@@ -75,12 +73,27 @@ export const AddressForm = () => {
           </div>
 
           <div className="flex flex-col mb-2">
+            <span>País</span>
+            <select
+              className="form-input"
+              {...register("country", { required: true })}
+              defaultValue="Colombia"
+            >
+              <option value="Colombia">Colombia</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col mb-2">
             <span>Ciudad</span>
-            <input
-              type="text"
+            <select
               className="form-input"
               {...register("city", { required: true })}
-            />
+            >
+              <option value="">Seleccione una ciudad</option>
+              <option value="Bogota">Bogotá</option>
+              <option value="Medellin">Medellín</option>
+              <option value="Cali">Cali</option>
+            </select>
           </div>
 
           <div className="flex flex-col mb-2">

@@ -5,6 +5,7 @@ interface Address {
   firstName: string;
   lastName: string;
   address: string;
+  country: string;
   city: string;
   phone: string;
 }
@@ -21,6 +22,7 @@ export const useAddressStore = create<AddressState>()(
         firstName: "",
         lastName: "",
         address: "",
+        country: "Colombia",
         city: "",
         phone: "",
       },
