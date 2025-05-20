@@ -1,16 +1,20 @@
 "use client";
 import React from "react";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
-import { CreateOrderData, CreateOrderActions } from "@paypal/paypal-js";
-import { updateTransactionId } from "@/actions/payments";
+import {
+  CreateOrderData,
+  CreateOrderActions,
+  OnApproveActions,
+  OnApproveData,
+} from "@paypal/paypal-js";
+import { paypalChekPayment, updateTransactionId } from "@/actions/payments";
 
-interface Props{
-    orderId: string;
-    amount: number;
+interface Props {
+  orderId: string;
+  amount: number;
 }
 
-
-export const PaypalButton = ({orderId, amount}: Props) => {
+export const PaypalButton = ({ orderId, amount }: Props) => {
   const [{ isPending }] = usePayPalScriptReducer();
 
   const roundedAmount = Math.round(amount * 100) / 100;
@@ -34,15 +38,15 @@ export const PaypalButton = ({orderId, amount}: Props) => {
       purchase_units: [
         {
           // invoice_id: '1234567890',
-          amount: { 
+          amount: {
             value: `${roundedAmount}`,
-            currency_code: "USD"
+            currency_code: "USD",
           },
         },
       ],
     });
 
-    console.log(transactionId, 'transactionId');
+    console.log(transactionId, "transactionId");
 
     const { ok } = await updateTransactionId(orderId, transactionId);
 
@@ -50,14 +54,25 @@ export const PaypalButton = ({orderId, amount}: Props) => {
       throw new Error("algo salio mal");
     }
 
-    
     return transactionId;
+  };
+
+  const onApprove = async (data: OnApproveData, actions: OnApproveActions) => {
+    console.log("On Approve", "llega");
+
+    const details = await actions.order?.capture();
+
+    if (!details) {
+      throw new Error("algo salio mal");
+    }
+
+    await paypalChekPayment(details?.id || "");
   };
 
   return (
     <div className="flex justify-center w-ful">
       <div className="w-full sm:w-[90%] md:w-[80%] lg:w-[70%] max-w-[500px]">
-        <PayPalButtons createOrder={createOrder} />
+        <PayPalButtons createOrder={createOrder} onApprove={onApprove} />
       </div>
     </div>
   );

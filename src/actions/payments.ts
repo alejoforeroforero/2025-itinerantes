@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { PayPalOrderStatusResponse } from "@/interfaces/paypal.interface";
 
 export const updateTransactionId = async (
   orderId: string,
@@ -19,7 +20,7 @@ export const updateTransactionId = async (
       };
     }
     return {
-      ok: true
+      ok: true,
     };
   } catch (error) {
     console.error("Error updating transaction ID:", error);
@@ -27,5 +28,96 @@ export const updateTransactionId = async (
       ok: false,
       message: "No se puedo actualizar el id de la transaccion",
     };
+  }
+};
+
+export const paypalChekPayment = async (transactionId: string) => {
+  const authToken = await getPaypalBearerToken();
+
+  if (!authToken) {
+    return {
+      ok: false,
+      message: "No se pudo obtener el token de PayPal",
+    };
+  }
+
+  const paypalOrder = await verifyPaypalPayment(transactionId, authToken);
+
+  if (!paypalOrder) {
+    return {
+      ok: false,
+      message: "No se pudo verificar el pago de PayPal",
+    };
+  }
+
+  const { status, purchase_units } = paypalOrder;
+  //const {} = purchase_units[0];
+
+  console.log(status, purchase_units);
+
+
+  if (status !== "COMPLETED") { 
+    return {
+      ok: false,
+      message: "El pago no es valido",
+    };
+  }
+};
+
+const getPaypalBearerToken = async (): Promise<string | null> => {
+  const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+  const PAYPAL_SECRET = process.env.PAYPAL_SECRET;
+  const oauth2Url = process.env.PAYPAL_OAUTH_URL ?? "";
+
+  const base64Token = Buffer.from(
+    `${PAYPAL_CLIENT_ID}:${PAYPAL_SECRET}`,
+    "utf-8"
+  ).toString("base64");
+
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+  myHeaders.append("Authorization", `Basic ${base64Token}`);
+
+  const urlencoded = new URLSearchParams();
+  urlencoded.append("grant_type", "client_credentials");
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: urlencoded,
+  };
+
+  try {
+    const response = await fetch(oauth2Url, requestOptions);
+    const data = await response.json();
+    return data.access_token;
+  } catch (error) {
+    console.error("Error getting PayPal bearer token:", error);
+    return null;
+  }
+};
+
+const verifyPaypalPayment = async (
+  transactionId: string,
+  bearerToken: string
+): Promise<PayPalOrderStatusResponse | null> => {
+  const paypalOrderUrl = `${process.env.PAYPAL_ORDERS_URL}/${transactionId}`;
+
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", `Bearer ${bearerToken}`);
+
+  const requestOptions = {
+    method: "GET",
+    headers: myHeaders,
+  };
+
+  try {
+    const response = await fetch(paypalOrderUrl, requestOptions);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error verifying PayPal payment:", error);
+    return null;
   }
 };
