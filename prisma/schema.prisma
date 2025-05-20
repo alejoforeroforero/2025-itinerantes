@@ -94,6 +94,7 @@ model Categoria {
 model Order {
   id              String      @id @default(uuid())
   transactionId   String?
+  paidAt          DateTime?
   status          String      @default("PENDING")
   total           Float
   subTotal        Float
