@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { PayPalOrderStatusResponse } from "@/interfaces/paypal.interface";
 
+
 export const updateTransactionId = async (
   orderId: string,
   transactionId: string
@@ -51,15 +52,45 @@ export const paypalChekPayment = async (transactionId: string) => {
   }
 
   const { status, purchase_units } = paypalOrder;
-  //const {} = purchase_units[0];
+  const { invoice_id: orderId } = purchase_units[0];
 
-  console.log(status, purchase_units);
-
-
-  if (status !== "COMPLETED") { 
+  if (status !== "COMPLETED") {
     return {
       ok: false,
       message: "El pago no es valido",
+    };
+  }
+
+  try {
+    const order = await prisma.order.findFirst({
+      where: { transactionId: transactionId },
+    });
+
+    if (!order) {
+      return {
+        ok: false,
+        message:
+          "No se encontró la orden con el ID de transacción proporcionado",
+      };
+    }
+
+    await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        status: "PAID",
+        paidAt: new Date(),
+      },
+    });
+
+    return {
+      ok: true,
+      message: "Pago realizado correctamente",
+    };
+  } catch (error) {
+    console.error("Error updating order:", error);
+    return {
+      ok: false,
+      message: "No se pudo actualizar la orden",
     };
   }
 };
@@ -88,7 +119,10 @@ const getPaypalBearerToken = async (): Promise<string | null> => {
   };
 
   try {
-    const response = await fetch(oauth2Url, requestOptions);
+    const response = await fetch(oauth2Url, {
+      ...requestOptions,
+      cache: "no-store",
+    });
     const data = await response.json();
     return data.access_token;
   } catch (error) {
@@ -113,7 +147,10 @@ const verifyPaypalPayment = async (
   };
 
   try {
-    const response = await fetch(paypalOrderUrl, requestOptions);
+    const response = await fetch(paypalOrderUrl, {
+      ...requestOptions,
+      cache: "no-store",
+    });
     const data = await response.json();
     return data;
   } catch (error) {

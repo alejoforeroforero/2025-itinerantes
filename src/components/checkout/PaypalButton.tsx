@@ -8,6 +8,8 @@ import {
   OnApproveData,
 } from "@paypal/paypal-js";
 import { paypalChekPayment, updateTransactionId } from "@/actions/payments";
+import { useRouter } from "next/navigation";
+
 
 interface Props {
   orderId: string;
@@ -16,10 +18,9 @@ interface Props {
 
 export const PaypalButton = ({ orderId, amount }: Props) => {
   const [{ isPending }] = usePayPalScriptReducer();
+  const router = useRouter();
 
   const roundedAmount = Math.round(amount * 100) / 100;
-
-  console.log(roundedAmount);
 
   if (isPending) {
     return (
@@ -37,7 +38,7 @@ export const PaypalButton = ({ orderId, amount }: Props) => {
       intent: "CAPTURE",
       purchase_units: [
         {
-          // invoice_id: '1234567890',
+          invoice_id: orderId,
           amount: {
             value: `${roundedAmount}`,
             currency_code: "USD",
@@ -45,8 +46,6 @@ export const PaypalButton = ({ orderId, amount }: Props) => {
         },
       ],
     });
-
-    console.log(transactionId, "transactionId");
 
     const { ok } = await updateTransactionId(orderId, transactionId);
 
@@ -58,15 +57,19 @@ export const PaypalButton = ({ orderId, amount }: Props) => {
   };
 
   const onApprove = async (data: OnApproveData, actions: OnApproveActions) => {
-    console.log("On Approve", "llega");
-
     const details = await actions.order?.capture();
 
     if (!details) {
       throw new Error("algo salio mal");
     }
 
-    await paypalChekPayment(details?.id || "");
+    const { ok } = await paypalChekPayment(details?.id || "");
+
+    if(ok){
+      console.log("Pago realizado correctamente");
+      router.push('/checkout/success');
+    }
+  
   };
 
   return (

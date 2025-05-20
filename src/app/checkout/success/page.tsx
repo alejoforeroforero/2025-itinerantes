@@ -2,8 +2,19 @@
 
 import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect } from 'react';
+import useStore from '@/store/store';
 
 export default function CheckoutSuccessPage() {
+  const products = useStore((state) => state.products);
+  const getTotalPrice = useStore((state) => state.getTotalPrice);
+  const clearCart = useStore((state) => state.clearCart);
+
+  useEffect(() => {
+    // Clear cart after displaying the information
+    clearCart();
+  }, [clearCart]);
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
@@ -40,6 +51,36 @@ export default function CheckoutSuccessPage() {
                     day: 'numeric'
                   })}
                 </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Purchase Details */}
+          <div className="mt-8 border-t border-gray-200 pt-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Detalles de la Compra
+            </h2>
+            <div className="space-y-4">
+              {products.map((product) => (
+                <div key={product.id} className="flex justify-between items-center">
+                  <div>
+                    <p className="font-medium text-gray-900">{product.name}</p>
+                    <p className="text-sm text-gray-600">
+                      {product.quantity} x ${product.price.toFixed(2)}
+                    </p>
+                  </div>
+                  <p className="font-medium text-gray-900">
+                    ${(product.price * product.quantity).toFixed(2)}
+                  </p>
+                </div>
+              ))}
+              <div className="border-t border-gray-200 pt-4 mt-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-semibold text-gray-900">Total:</span>
+                  <span className="text-xl font-bold text-gray-900">
+                    ${getTotalPrice().toFixed(2)}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
