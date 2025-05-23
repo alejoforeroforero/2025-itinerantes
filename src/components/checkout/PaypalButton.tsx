@@ -67,7 +67,7 @@ export const PaypalButton = ({ orderId, amount }: Props) => {
 
     if(ok){
       console.log("Pago realizado correctamente");
-      router.push('/checkout/success');
+      router.refresh();
     }
   
   };
