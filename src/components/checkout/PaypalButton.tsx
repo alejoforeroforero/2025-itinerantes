@@ -9,7 +9,7 @@ import {
 } from "@paypal/paypal-js";
 import { paypalChekPayment, updateTransactionId } from "@/actions/payments";
 import { useRouter } from "next/navigation";
-
+import useStore from "@/store/store";
 
 interface Props {
   orderId: string;
@@ -19,6 +19,7 @@ interface Props {
 export const PaypalButton = ({ orderId, amount }: Props) => {
   const [{ isPending }] = usePayPalScriptReducer();
   const router = useRouter();
+  const clearCart = useStore((state) => state.clearCart);
 
   const roundedAmount = Math.round(amount * 100) / 100;
 
@@ -67,9 +68,9 @@ export const PaypalButton = ({ orderId, amount }: Props) => {
 
     if(ok){
       console.log("Pago realizado correctamente");
+      clearCart();
       router.refresh();
     }
-  
   };
 
   return (

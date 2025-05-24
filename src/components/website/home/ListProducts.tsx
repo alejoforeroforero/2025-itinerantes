@@ -24,17 +24,26 @@ interface ListProductsProps {
 }
 
 export function ListProducts({ products }: ListProductsProps) {
+  const cartProducts = useStore((state) => state.products);
+
   const handleAddToCart = (product: Product) => {
-    if (product.price === null) return;
+    if (product.price === null || product.inStock === null || product.inStock <= 0) return;
     
     const productCart = {
       id: product.id,
       name: product.nombre,
       price: product.price,
       quantity: 1,
+      stock: product.inStock,
     };
     
     useStore.getState().addProduct(productCart);
+  };
+
+  const getAvailableStock = (product: Product) => {
+    const cartProduct = cartProducts.find(p => p.id === product.id);
+    if (!cartProduct) return product.inStock || 0;
+    return (product.inStock || 0) - cartProduct.quantity;
   };
 
   return (
@@ -80,7 +89,7 @@ export function ListProducts({ products }: ListProductsProps) {
 
               {product.inStock !== undefined && (
                 <p className="text-sm text-gray-500">
-                  Stock: {product.inStock} unidades
+                  Stock: {getAvailableStock(product)} unidades
                 </p>
               )}
 
@@ -99,20 +108,18 @@ export function ListProducts({ products }: ListProductsProps) {
                   ))}
                 </div>
               )}
-              {product.inStock !== undefined &&
-                product.inStock !== null &&
-                product.inStock > 0 && (
-                  <div className="mt-3">
-                    <button
-                      onClick={() => {
-                        handleAddToCart(product);
-                      }}
-                      className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 cursor-pointer"
-                    >
-                      Agregar producto
-                    </button>
-                  </div>
-                )}
+              {getAvailableStock(product) > 0 && (
+                <div className="mt-3">
+                  <button
+                    onClick={() => {
+                      handleAddToCart(product);
+                    }}
+                    className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 cursor-pointer"
+                  >
+                    Agregar producto
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

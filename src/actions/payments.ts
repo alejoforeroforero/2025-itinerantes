@@ -64,6 +64,13 @@ export const paypalChekPayment = async (transactionId: string) => {
   try {
     const order = await prisma.order.findFirst({
       where: { transactionId: transactionId },
+      include: {
+        orderItems: {
+          include: {
+            product: true
+          }
+        }
+      }
     });
 
     if (!order) {
@@ -74,6 +81,7 @@ export const paypalChekPayment = async (transactionId: string) => {
       };
     }
 
+    // Update order status
     await prisma.order.update({
       where: { id: orderId },
       data: {
@@ -81,6 +89,18 @@ export const paypalChekPayment = async (transactionId: string) => {
         paidAt: new Date(),
       },
     });
+
+    // Update product stock
+    for (const item of order.orderItems) {
+      await prisma.producto.update({
+        where: { id: item.productId },
+        data: {
+          inStock: {
+            decrement: item.quantity
+          }
+        }
+      });
+    }
 
     return {
       ok: true,

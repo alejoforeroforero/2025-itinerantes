@@ -6,6 +6,7 @@ interface ProductCart {
   name: string;
   price: number;
   quantity: number;
+  stock: number;
 }
 
 interface ProductState {
@@ -15,18 +16,26 @@ interface ProductState {
   clearCart: () => void;
   getTotalQuantity: () => number;
   getTotalPrice: () => number;
+  getProductStock: (productId: string) => number;
+  updateProductStock: (productId: string, newStock: number) => void;
 }
 
 const addProduct = (product: ProductCart) => (state: ProductState) => {
   const productExists = state.products.find((p) => p.id === product.id);
 
   if (productExists) {
+    if (productExists.stock < productExists.quantity + 1) {
+      return state;
+    }
     const updatedProducts = state.products.map((p) =>
       p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
     );
     return {
       products: updatedProducts,
     };
+  }
+  if (product.stock < 1) {
+    return state;
   }
   return { products: [...state.products, { ...product, quantity: 1 }] };
 };
@@ -50,7 +59,7 @@ const removeProduct = (product: ProductCart) => (state: ProductState) => {
 
 const useStore = create<ProductState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       products: [],
       addProduct: (product: ProductCart) => set(addProduct(product)),
       removeProduct: (product: ProductCart) => set(removeProduct(product)),
@@ -72,10 +81,21 @@ const useStore = create<ProductState>()(
             0
           );
       },
+      getProductStock: (productId: string): number => {
+        const product = get().products.find((p) => p.id === productId);
+        return product ? product.stock : 0;
+      },
+      updateProductStock: (productId: string, newStock: number) => {
+        set((state) => ({
+          products: state.products.map((p) =>
+            p.id === productId ? { ...p, stock: newStock } : p
+          ),
+        }));
+      },
     }),
     {
-      name: 'cart-storage', // unique name for localStorage key
-      partialize: (state) => ({ products: state.products }), // only persist the products array
+      name: 'cart-storage',
+      partialize: (state) => ({ products: state.products }),
     }
   )
 );
