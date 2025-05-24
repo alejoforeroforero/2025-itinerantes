@@ -94,8 +94,9 @@ export default async function OrderDetailsPage({
                     {order.subTotal.toFixed(2)}
                   </p>
                   <p>
-                    <span className="font-medium">Impuestos:</span> $
+                    <span className="font-medium">Impuestos (12.42%):</span> $
                     {order.tax.toFixed(2)}
+                    <span className="text-sm text-gray-500 ml-2">(Incluidos en el precio)</span>
                   </p>
                   <p className="text-lg font-bold text-[var(--primary)]">
                     <span className="font-medium">Total:</span> $

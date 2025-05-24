@@ -6,14 +6,8 @@ import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { CartClearer } from "./CartClearer";
 
-interface Props {
-  params: {
-    id: string;
-  };
-}
-
-export default async function OrderPage({ params }: Props) {
-  const { id } = params;
+export default async function OrderPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
   try {
     const order = await getOrderById(id);

@@ -46,6 +46,9 @@ export const ProductsInCart = () => {
                 Total: ${getTotalPrice().toFixed(2)}
               </p>
             </div>
+            <p className="text-sm text-gray-500 text-right">
+              Incluye ${(getTotalPrice() * (0.1242 / 1.1242)).toFixed(2)} de impuestos (12.42%)
+            </p>
           </div>
         </>
       )}

@@ -98,10 +98,11 @@ export const placeOrder = async (
                 const product = products.find(p => p.id === item.id);
                 if (!product) throw new Error(`Product ${item.id} not found`);
 
-                const subTotal = product.price! * item.quantity;
-                totals.subTotal += subTotal;
-                totals.tax += subTotal * 0.15;
-                totals.total += subTotal * 1.15;
+                const total = product.price! * item.quantity;
+                totals.total += total;
+                // Calculate tax from total since it's already included
+                totals.tax += total * (0.1242 / 1.1242); // Extract tax from total price
+                totals.subTotal += total - (total * (0.1242 / 1.1242)); // Calculate subtotal by removing tax
 
                 return totals;
             },

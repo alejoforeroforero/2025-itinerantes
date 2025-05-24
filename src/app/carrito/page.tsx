@@ -83,6 +83,9 @@ export default function CartPage() {
                 <p className="text-2xl font-bold">
                   Precio total: ${getTotalPrice().toFixed(2)}
                 </p>
+                <p className="text-sm text-gray-500">
+                  Incluye ${(getTotalPrice() * (0.1242 / 1.1242)).toFixed(2)} de impuestos (12.42%)
+                </p>
               </div>
               <Link
                 className="bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition-colors font-medium"
