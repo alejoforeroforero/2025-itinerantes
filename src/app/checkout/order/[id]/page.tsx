@@ -5,6 +5,7 @@ import { PlaceOrder } from "@/components/checkout/PlaceOrder";
 import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { CartClearer } from "./CartClearer";
+import { PayUStatusHandler } from "./PayUStatusHandler";
 
 export default async function OrderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -18,6 +19,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
 
     return (
       <div className="max-w-4xl mx-auto p-6">
+        <PayUStatusHandler orderId={id} />
         <div className="space-y-6">
           {/* Order Status Banner */}
           <div className="bg-white rounded-lg shadow-lg p-6">

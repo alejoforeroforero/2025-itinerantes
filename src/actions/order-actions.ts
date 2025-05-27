@@ -97,4 +97,25 @@ export const findPendingOrder = async (
     console.error('Error finding pending order:', error);
     return null;
   }
+};
+
+export const updateOrderStatus = async (orderId: string, status: 'PENDING' | 'PAID' | 'CANCELLED') => {
+  try {
+    const updatedOrder = await prisma.order.update({
+      where: { id: orderId },
+      data: { status },
+      include: {
+        orderItems: {
+          include: {
+            product: true
+          }
+        }
+      }
+    });
+
+    return updatedOrder;
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    throw error;
+  }
 }; 

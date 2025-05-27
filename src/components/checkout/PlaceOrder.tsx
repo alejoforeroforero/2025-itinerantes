@@ -4,8 +4,9 @@ import { placeOrder } from "@/actions/place-order";
 import useStore from "@/store/store";
 import { useAddressStore } from "@/store/address-store";
 import { useState, useEffect } from "react";
-import { PaypalButton } from "./PaypalButton";
+// import { PaypalButton } from "./PaypalButton";
 import { getOrderById } from "@/actions/order-actions";
+import { PayUSection } from "./PayUSection";
 
 interface Order {
   id: string;
@@ -132,12 +133,14 @@ export const PlaceOrder = () => {
         </p>
         {order?.status === "PENDING" && (
           <p className="text-white-600 m-2">
-            <span className="font-medium bg-red-400 p-2 rounded-md">NO PAGADA</span> 
+            <span className="font-medium bg-red-400 p-2 rounded-md">
+              NO PAGADA
+            </span>
           </p>
         )}
         {order?.status === "PAID" && (
           <p className=" text-green-600">
-            <span className="font-medium">Status: Pagada</span> 
+            <span className="font-medium">Status: Pagada</span>
           </p>
         )}
 
@@ -167,7 +170,12 @@ export const PlaceOrder = () => {
           <span className="font-medium">Phone:</span> {address?.phone}
         </p>
       </div>
-      <PaypalButton orderId={orderId} amount={getTotalPrice()} />
+      <div className="flex justify-between">
+        <PayUSection orderId={orderId} amount={getTotalPrice()} />
+      </div>
+      {/* <div>
+        <PaypalButton orderId={orderId} amount={getTotalPrice()} />
+      </div> */}
     </div>
   );
 };
