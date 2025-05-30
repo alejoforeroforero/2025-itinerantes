@@ -95,7 +95,7 @@ model Order {
   id              String      @id @default(uuid())
   transactionId   String?
   paidAt          DateTime?
-  status          String      @default("PENDING")
+  status          OrderStatus @default(PENDING)
   total           Float
   subTotal        Float
   tax             Float
@@ -110,6 +110,13 @@ model Order {
   city            String
   phone           String
   orderItems      OrderItem[]
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  DELIVERED
+  COMPLETED
 }
 
 model OrderItem {

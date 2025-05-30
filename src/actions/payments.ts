@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { PayPalOrderStatusResponse } from "@/interfaces/paypal.interface";
+import { OrderStatus } from '@prisma/client';
 
 
 export const updateTransactionId = async (
@@ -85,7 +86,7 @@ export const paypalChekPayment = async (transactionId: string) => {
     await prisma.order.update({
       where: { id: orderId },
       data: {
-        status: "PAID",
+        status: OrderStatus.PAID,
         paidAt: new Date(),
       },
     });

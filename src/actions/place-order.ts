@@ -1,13 +1,14 @@
 'use server';
 
 import prisma from '@/lib/prisma';
+import { OrderStatus } from '@prisma/client';
 
 interface OrderResponse {
     ok: boolean;
     message?: string;
     order?: {
         id: string;
-        status: string;
+        status: OrderStatus;
         total: number;
         subTotal: number;
         tax: number;
@@ -120,7 +121,7 @@ export const placeOrder = async (
                     subTotal,
                     tax,
                     itemsInOrder,
-                    status: 'PENDING',
+                    status: OrderStatus.PENDING,
                     firstName: address.firstName,
                     lastName: address.lastName,
                     email: address.email,

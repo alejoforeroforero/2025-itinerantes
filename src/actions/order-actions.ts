@@ -1,6 +1,7 @@
 'use server'
 
 import prisma from "@/lib/prisma";
+import { OrderStatus } from '@prisma/client';
 
 export const getOrders = async () => {
   try {
@@ -62,7 +63,7 @@ export const findPendingOrder = async (
     // Get all pending orders
     const pendingOrders = await prisma.order.findMany({
       where: {
-        status: 'PENDING',
+        status: OrderStatus.PENDING,
         firstName: address.firstName,
         lastName: address.lastName,
         address: address.address,
@@ -99,7 +100,7 @@ export const findPendingOrder = async (
   }
 };
 
-export const updateOrderStatus = async (orderId: string, status: 'PENDING' | 'PAID' | 'CANCELLED') => {
+export const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
   try {
     const updatedOrder = await prisma.order.update({
       where: { id: orderId },
@@ -117,5 +118,33 @@ export const updateOrderStatus = async (orderId: string, status: 'PENDING' | 'PA
   } catch (error) {
     console.error('Error updating order status:', error);
     throw error;
+  }
+};
+
+export const getOrdersByStatus = async (status?: OrderStatus) => {
+  try {
+    console.log('Getting orders with status:', status);
+    
+    const orders = await prisma.order.findMany({
+      where: status ? { 
+        status: status 
+      } : undefined,
+      include: {
+        orderItems: {
+          include: {
+            product: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    console.log('Found orders:', orders.length);
+    return orders;
+  } catch (error) {
+    console.error('Error fetching orders by status:', error);
+    return [];
   }
 }; 
