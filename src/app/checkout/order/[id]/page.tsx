@@ -50,9 +50,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
 
           {/* Products Section */}
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Productos en el pedido
-            </h2>
+           
             {order.status === 'PAID' ? (
               // Show products from database for paid orders
               <div className="space-y-4">
@@ -89,7 +87,22 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
               <ProductsInCart />
             )}
           </div>
-          
+
+          {/* Shipping Information Section */}
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Información de Envío
+            </h2>
+            <div className="space-y-3 text-gray-600">
+              <p><span className="font-medium">Nombre:</span> {order.firstName} {order.lastName}</p>
+              <p><span className="font-medium">Correo electrónico:</span> {order.email}</p>
+              <p><span className="font-medium">Dirección:</span> {order.address}</p>
+              <p><span className="font-medium">Ciudad:</span> {order.city}</p>
+              <p><span className="font-medium">País:</span> {order.country}</p>
+              <p><span className="font-medium">Teléfono:</span> {order.phone}</p>
+            </div>
+          </div>
+
           {/* Payment Section - Only show if order is pending */}
           {order.status === 'PENDING' && (
             <div className="bg-white rounded-lg shadow-lg p-6">

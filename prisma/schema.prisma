@@ -104,12 +104,12 @@ model Order {
   updatedAt       DateTime    @updatedAt
   firstName       String
   lastName        String
+  email           String      @default("")
   address         String
   country         String      @default("Colombia")
   city            String
   phone           String
   orderItems      OrderItem[]
-  
 }
 
 model OrderItem {

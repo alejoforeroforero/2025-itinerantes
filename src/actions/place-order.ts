@@ -16,6 +16,7 @@ interface OrderResponse {
         updatedAt: Date;
         firstName: string;
         lastName: string;
+        email: string;
         address: string;
         city: string;
         phone: string;
@@ -31,6 +32,7 @@ export const placeOrder = async (
     address: {
         firstName: string;
         lastName: string;
+        email: string;
         address: string;
         city: string;
         phone: string;
@@ -50,6 +52,7 @@ export const placeOrder = async (
                 status: 'PENDING',
                 firstName: address.firstName,
                 lastName: address.lastName,
+                email: address.email,
                 address: address.address,
                 city: address.city,
                 phone: address.phone,
@@ -120,6 +123,7 @@ export const placeOrder = async (
                     status: 'PENDING',
                     firstName: address.firstName,
                     lastName: address.lastName,
+                    email: address.email,
                     address: address.address,
                     city: address.city,
                     phone: address.phone,

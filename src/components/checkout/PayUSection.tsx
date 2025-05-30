@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { calculateMD5 } from "@/lib/signature";
 import Image from "next/image";
+import { useAddressStore } from "@/store/address-store";
 
 export const PayUSection = ({
   orderId,
@@ -18,6 +19,7 @@ export const PayUSection = ({
   const currency = process.env.NEXT_PUBLIC_PAYU_CURRENCY;
   const price = amount.toString();
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const address = useAddressStore((state) => state.address);
 
   useEffect(() => {
     const signature = calculateMD5(
@@ -41,14 +43,7 @@ export const PayUSection = ({
           priority
         />
       </div>
-      <div className="mb-4 text-sm text-gray-600">
-        <p className="font-bold mb-2">Test Card Details:</p>
-        <p>Card: 4111111111111111</p>
-        <p>Expiry: 12/25</p>
-        <p>CVV: 123</p>
-        <p>Name: Test User</p>
-        <p>Document: 1234567890</p>
-      </div>
+     
       <form
         method="post"
         action="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/"
@@ -68,13 +63,13 @@ export const PayUSection = ({
           value={signature}
         />
         <input name="test" type="hidden" value="1" />
-        <input name="buyerEmail" type="hidden" value="test@test.com" />
-        <input name="buyerFullName" type="hidden" value="Test User" />
+        <input name="buyerEmail" type="hidden" value={address.email} />
+        <input name="buyerFullName" type="hidden" value={`${address.firstName} ${address.lastName}`} />
         <input name="buyerDocument" type="hidden" value="1234567890" />
         <input name="buyerDocumentType" type="hidden" value="CC" />
-        <input name="buyerPhone" type="hidden" value="3001234567" />
-        <input name="shippingAddress" type="hidden" value="Calle 123" />
-        <input name="shippingCity" type="hidden" value="Bogota" />
+        <input name="buyerPhone" type="hidden" value={address.phone} />
+        <input name="shippingAddress" type="hidden" value={address.address} />
+        <input name="shippingCity" type="hidden" value={address.city} />
         <input name="shippingCountry" type="hidden" value="CO" />
         <input
           name="responseUrl"

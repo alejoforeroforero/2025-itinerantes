@@ -9,6 +9,7 @@ import useStore from "@/store/store";
 type FormInputs = {
   firstName: string;
   lastName: string;
+  email: string;
   address: string;
   country: string;
   city: string;
@@ -59,7 +60,7 @@ export const AddressForm = () => {
     <div>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full  xl:w-[1000px] flex flex-col justify-center text-left"
+        className="w-full xl:w-[1000px] flex flex-col justify-center text-left"
       >
         <div className="grid grid-cols-1 gap-2 sm:gap-5 sm:grid-cols-2">
           <div className="flex flex-col mb-2">
@@ -77,6 +78,21 @@ export const AddressForm = () => {
               type="text"
               className="form-input"
               {...register("lastName", { required: true })}
+            />
+          </div>
+
+          <div className="flex flex-col mb-2">
+            <span>Correo electrónico</span>
+            <input
+              type="email"
+              className="form-input"
+              {...register("email", { 
+                required: true,
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "Correo electrónico inválido"
+                }
+              })}
             />
           </div>
 
@@ -122,14 +138,15 @@ export const AddressForm = () => {
             />
           </div>
         </div>
-        <button
-          //href="/checkout"
-          disabled={!isValid}
-          type="submit"
-          className="form-action-button-primary flex w-full sm:w-1/2 justify-center"
-        >
-          Siguiente
-        </button>
+        <div className="flex justify-center mt-6">
+          <button
+            disabled={!isValid}
+            type="submit"
+            className="form-action-button-primary w-full sm:w-1/2"
+          >
+            Siguiente
+          </button>
+        </div>
       </form>
     </div>
   );

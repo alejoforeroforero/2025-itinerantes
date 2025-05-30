@@ -125,9 +125,6 @@ export const PlaceOrder = () => {
   return (
     <div className="mt-10">
       <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">
-          Order Information
-        </h2>
         <p className="text-gray-600">
           <span className="font-medium">Order ID:</span> {orderId}
         </p>
@@ -145,31 +142,11 @@ export const PlaceOrder = () => {
         )}
 
         <p className="text-gray-600">
-          <span className="font-medium">Total Amount:</span> $
+          <span className="font-medium">Total a pagar:</span> $
           {getTotalPrice().toFixed(2)}
         </p>
       </div>
-      <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">
-          Shipping Address
-        </h2>
-        <p className="text-gray-600">
-          <span className="font-medium">Name:</span> {address?.firstName}{" "}
-          {address?.lastName}
-        </p>
-        <p className="text-gray-600">
-          <span className="font-medium">Address:</span> {address?.address}
-        </p>
-        <p className="text-gray-600">
-          <span className="font-medium">City:</span> {address?.city}
-        </p>
-        <p className="text-gray-600">
-          <span className="font-medium">Country:</span> {address?.country}
-        </p>
-        <p className="text-gray-600">
-          <span className="font-medium">Phone:</span> {address?.phone}
-        </p>
-      </div>
+
       <div className="flex justify-between">
         <PayUSection orderId={orderId} amount={getTotalPrice()} />
       </div>
