@@ -128,7 +128,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                   <div className="flex flex-col sm:flex-row gap-4">
                     <Link
                       href="/"
-                      className="flex-1 text-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-[var(--primary)] hover:bg-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary)]"
                     >
                       Volver a la Tienda
                     </Link>

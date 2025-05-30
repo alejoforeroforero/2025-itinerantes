@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import useStore from "@/store/store";
+import Image from "next/image";
 
 interface Categoria {
   id: string;
@@ -54,21 +55,14 @@ export function ListProducts({ products }: ListProductsProps) {
           key={product.id}
           className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
         >
-          <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
-            <svg
-              className="w-24 h-24 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-              />
-            </svg>
+          <div className="w-full h-48 relative">
+            <Image
+              src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?q=80&w=1000&auto=format&fit=crop"
+              alt={product.nombre}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
           </div>
           <div className="p-4">
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
@@ -82,7 +76,7 @@ export function ListProducts({ products }: ListProductsProps) {
 
             <div className="space-y-2">
               {product.price !== undefined && product.price !== null && (
-                <p className="text-lg font-bold text-blue-600">
+                <p className="text-lg font-bold text-[var(--primary)]">
                   ${product.price.toFixed(2)}
                 </p>
               )}
@@ -98,7 +92,7 @@ export function ListProducts({ products }: ListProductsProps) {
                   {product.categorias.map((categoria) => (
                     <span
                       key={categoria.id}
-                      className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+                      className="px-2 py-1 bg-[var(--background)] text-[var(--primary)] text-xs rounded-full border border-gray-100"
                     >
                       <Link className="cursor-pointer" href={`/categoria/${categoria.slug}`}>
                         {" "}
@@ -114,7 +108,7 @@ export function ListProducts({ products }: ListProductsProps) {
                     onClick={() => {
                       handleAddToCart(product);
                     }}
-                    className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 cursor-pointer"
+                    className="w-full py-2 px-4 bg-[var(--primary)] hover:bg-[var(--accent)] text-white font-medium rounded-lg transition-colors duration-200 cursor-pointer"
                   >
                     Agregar producto
                   </button>

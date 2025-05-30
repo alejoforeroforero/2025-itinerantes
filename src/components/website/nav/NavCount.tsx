@@ -16,8 +16,8 @@ export const NavCount = () => {
   }
 
   return (
-    <span className="absolute top-3 right-1 bg-[var(--primary)] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+    <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-orange-500 text-white text-xs flex items-center justify-center">
       {totalQuantity}
-    </span>
+    </div>
   );
 };

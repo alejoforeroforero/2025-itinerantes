@@ -90,7 +90,7 @@ export const PayUSection = ({
           name="Submit"
           type="submit"
           value="Pagar"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
+          className="w-full bg-[var(--primary)] text-white py-2 px-4 rounded-md hover:bg-[var(--accent)] transition-colors duration-200 cursor-pointer"
         />
       </form>
     </div>

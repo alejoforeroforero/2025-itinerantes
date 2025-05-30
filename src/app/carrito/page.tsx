@@ -88,7 +88,7 @@ export default function CartPage() {
                 </p>
               </div>
               <Link
-                className="bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition-colors font-medium"
+                className="bg-[var(--primary)] text-white px-6 py-2 rounded-lg hover:bg-[var(--accent)] transition-colors font-medium"
                 href="/checkout/address"
               >
                 Checkout

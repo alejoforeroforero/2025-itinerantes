@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import { getProductDataBySlug } from "@/actions/product-actions";
+import Image from "next/image";
+import { DEFAULT_IMAGE } from "@/config/defaults";
+import { AddToCartButton } from "@/components/website/cart/AddToCartButton";
+import Link from "next/link";
+import { StockDisplay } from "@/components/website/product/StockDisplay";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -36,84 +41,64 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
         {/* Product Header */}
-        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4">
-          <h1 className="text-3xl font-bold text-white">{nombre}</h1>
+        <div className="bg-[var(--primary)]/5 border-b border-gray-100 px-6 py-4">
+          <h1 className="text-3xl font-bold text-[var(--primary)]">{nombre}</h1>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Product Image */}
           <div className="p-6 flex items-center justify-center">
-            <svg 
-              className="w-full max-w-md h-64 text-gray-300" 
-              viewBox="0 0 280 280" 
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect width="280" height="280" fill="#f3f4f6" />
-              <path 
-                d="M140 50C89.5 50 49 90.5 49 141C49 191.5 89.5 232 140 232C190.5 232 231 191.5 231 141C231 90.5 190.5 50 140 50ZM96.5 196.5L82 182L120.5 143.5L140 163L179.5 123.5L194 138L140 192L96.5 196.5Z" 
-                fill="#d1d5db" 
+            <div className="relative w-full max-w-md h-64">
+              <Image
+                src={DEFAULT_IMAGE}
+                alt={nombre}
+                fill
+                className="object-cover rounded-lg"
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
-              <path 
-                d="M140 85C140 82.2386 142.239 80 145 80H165C167.761 80 170 82.2386 170 85V105C170 107.761 167.761 110 165 110H145C142.239 110 140 107.761 140 105V85Z" 
-                fill="#d1d5db" 
-              />
-            </svg>
+            </div>
           </div>
 
           {/* Product Content */}
           <div className="p-6">
             {/* Description */}
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">Descripción</h2>
-              <p className="text-gray-600">{description || "Sin descripción disponible"}</p>
+              <h2 className="text-xl font-semibold text-[var(--primary)] mb-2">Descripción</h2>
+              <p className="text-[var(--secondary)]">{description || "Sin descripción disponible"}</p>
             </div>
 
             {/* Details Grid */}
             <div className="grid grid-cols-1 gap-6 mb-6">
               {/* Price */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="text-sm font-medium text-gray-500">Precio</h3>
-                <div className="mt-1 text-2xl font-bold text-gray-900">
+              <div className="bg-[var(--background)] p-4 rounded-lg border border-gray-100">
+                <h3 className="text-sm font-medium text-[var(--secondary)]">Precio</h3>
+                <div className="mt-1 text-2xl font-bold text-[var(--primary)]">
                   {price ? `$${price.toFixed(2)}` : "No disponible"}
                 </div>
               </div>
 
               {/* Stock */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="text-sm font-medium text-gray-500">Disponibilidad</h3>
-                <div className="mt-1 flex items-center">
-                  {inStock && inStock > 0 ? (
-                    <>
-                      <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                      <span className="text-lg font-semibold text-gray-900">
-                        {inStock} unidades disponibles
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                      <span className="text-lg font-semibold text-gray-900">Agotado</span>
-                    </>
-                  )}
-                </div>
+              <div className="bg-[var(--background)] p-4 rounded-lg border border-gray-100">
+                <h3 className="text-sm font-medium text-[var(--secondary)]">Disponibilidad</h3>
+                <StockDisplay product={res.product} />
               </div>
             </div>
 
             {/* Categories */}
             {categorias && categorias.length > 0 && (
               <div className="mb-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">Categorías</h2>
+                <h2 className="text-xl font-semibold text-[var(--primary)] mb-2">Categorías</h2>
                 <div className="flex flex-wrap gap-2">
                   {categorias.map((categoria) => (
-                    <span
+                    <Link
                       key={categoria.id || Math.random().toString()}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                      href={`/categoria/${categoria.nombre.toLowerCase().replace(/\s+/g, '-')}`}
+                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[var(--background)] text-[var(--primary)] border border-gray-100 hover:bg-[var(--primary)]/5 transition-colors duration-200"
                     >
                       {categoria.nombre}
-                    </span>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -121,16 +106,17 @@ export default async function ProductPage({ params }: Props) {
 
             {/* Call to Action */}
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
-              <button
+              <AddToCartButton 
+                product={res.product}
                 disabled={!inStock || inStock <= 0}
                 className={`flex-1 px-6 py-3 rounded-md font-medium ${
                   inStock && inStock > 0
-                    ? "bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer"
+                    ? "bg-[var(--primary)] hover:bg-[var(--accent)] text-white cursor-pointer"
                     : "bg-gray-300 cursor-not-allowed text-gray-500"
                 } transition-colors duration-200 text-center`}
               >
                 Añadir al carrito
-              </button>
+              </AddToCartButton>
             </div>
           </div>
         </div>
