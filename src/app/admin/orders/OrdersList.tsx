@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { OrderStatus } from '@prisma/client';
+import { formatCurrency } from '@/utils/format'
 
 interface Order {
   id: string;
@@ -117,7 +118,7 @@ export function OrdersList({ initialOrders }: OrdersListProps) {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  ${order.total.toFixed(2)}
+                  ${formatCurrency(order.total)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {new Date(order.createdAt).toLocaleDateString()}

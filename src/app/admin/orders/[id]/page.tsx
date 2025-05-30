@@ -1,6 +1,7 @@
 import { getOrderById } from "@/actions/order-actions";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { formatCurrency } from '@/utils/format'
 
 export default async function OrderDetailsPage({
   params,
@@ -95,16 +96,16 @@ export default async function OrderDetailsPage({
                   </p>
                   <p>
                     <span className="font-medium">Subtotal:</span> $
-                    {order.subTotal.toFixed(2)}
+                    {formatCurrency(order.subTotal)}
                   </p>
                   <p>
                     <span className="font-medium">Impuestos (12.42%):</span> $
-                    {order.tax.toFixed(2)}
+                    {formatCurrency(order.tax)}
                     <span className="text-sm text-gray-500 ml-2">(Incluidos en el precio)</span>
                   </p>
                   <p className="text-lg font-bold text-[var(--primary)]">
                     <span className="font-medium">Total:</span> $
-                    {order.total.toFixed(2)}
+                    {formatCurrency(order.total)}
                   </p>
                 </div>
               </div>
@@ -142,13 +143,13 @@ export default async function OrderDetailsPage({
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--foreground)]">
-                          ${item.price.toFixed(2)}
+                          ${formatCurrency(item.price)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--foreground)]">
                           {item.quantity}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--foreground)]">
-                          ${(item.price * item.quantity).toFixed(2)}
+                          ${formatCurrency(item.price * item.quantity)}
                         </td>
                       </tr>
                     ))}

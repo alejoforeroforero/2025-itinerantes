@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { formatCurrency } from '@/utils/format'
 
 interface Product {
   id: string;
@@ -73,7 +74,7 @@ export function ProductsSummary({ products }: ProductsSummaryProps) {
                   {product.price !== undefined && product.price !== null && (
                     <div className="summary-field">
                       <span className="summary-field-label">Precio:</span>
-                      <span className="summary-field-value">${product.price.toFixed(2)}</span>
+                      <span className="summary-field-value">${formatCurrency(product.price)}</span>
                     </div>
                   )}
 

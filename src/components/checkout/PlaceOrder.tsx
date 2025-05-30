@@ -3,10 +3,12 @@
 import { placeOrder } from "@/actions/place-order";
 import useStore from "@/store/store";
 import { useAddressStore } from "@/store/address-store";
+import { useShippingStore } from "@/store/shipping-store";
 import { useState, useEffect } from "react";
 // import { PaypalButton } from "./PaypalButton";
 import { getOrderById } from "@/actions/order-actions";
 import { PayUSection } from "./PayUSection";
+import { formatCurrency } from '@/utils/format'
 
 interface Order {
   id: string;
@@ -42,6 +44,11 @@ export const PlaceOrder = () => {
   const products = useStore((state) => state.products);
   const getTotalPrice = useStore((state) => state.getTotalPrice);
   const address = useAddressStore((state) => state.address);
+  const getShippingCost = useShippingStore((state) => state.getShippingCost);
+
+  const subtotal = getTotalPrice();
+  const shippingCost = getShippingCost();
+  const total = subtotal + shippingCost;
 
   useEffect(() => {
     const createOrder = async () => {
@@ -143,12 +150,12 @@ export const PlaceOrder = () => {
 
         <p className="text-gray-600">
           <span className="font-medium">Total a pagar:</span> $
-          {getTotalPrice().toFixed(2)}
+          {formatCurrency(total)}
         </p>
       </div>
 
       <div className="flex justify-between">
-        <PayUSection orderId={orderId} amount={getTotalPrice()} />
+        <PayUSection orderId={orderId} amount={total} />
       </div>
       {/* <div>
         <PaypalButton orderId={orderId} amount={getTotalPrice()} />

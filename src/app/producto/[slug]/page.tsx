@@ -5,6 +5,7 @@ import { DEFAULT_IMAGE } from "@/config/defaults";
 import { AddToCartButton } from "@/components/website/cart/AddToCartButton";
 import Link from "next/link";
 import { StockDisplay } from "@/components/website/product/StockDisplay";
+import { formatCurrency } from '@/utils/format'
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -75,7 +76,7 @@ export default async function ProductPage({ params }: Props) {
               <div className="bg-[var(--background)] p-4 rounded-lg border border-gray-100">
                 <h3 className="text-sm font-medium text-[var(--secondary)]">Precio</h3>
                 <div className="mt-1 text-2xl font-bold text-[var(--primary)]">
-                  {price ? `$${price.toFixed(2)}` : "No disponible"}
+                  {price ? `$${formatCurrency(price)}` : "No disponible"}
                 </div>
               </div>
 

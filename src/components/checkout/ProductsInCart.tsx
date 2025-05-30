@@ -1,11 +1,20 @@
 'use client'
 import React from 'react'
 import useStore from '@/store/store'
+import { useShippingStore } from '@/store/shipping-store'
+import { formatCurrency } from '@/utils/format'
 
 export const ProductsInCart = () => {
   const products = useStore((state) => state.products)
   const getTotalQuantity = useStore((state) => state.getTotalQuantity)
   const getTotalPrice = useStore((state) => state.getTotalPrice)
+  const shippingType = useShippingStore((state) => state.shippingType)
+  const setShippingType = useShippingStore((state) => state.setShippingType)
+  const getShippingCost = useShippingStore((state) => state.getShippingCost)
+
+  const shippingCost = getShippingCost()
+  const subtotal = getTotalPrice() // Este subtotal ya incluye los impuestos
+  const total = subtotal + shippingCost
 
   return (
     <div className="space-y-4">
@@ -28,27 +37,61 @@ export const ProductsInCart = () => {
                   <div>
                     <h3 className="font-medium text-gray-900">{product.name}</h3>
                     <p className="text-sm text-gray-600">
-                      {product.quantity} x ${product.price.toFixed(2)}
+                      {product.quantity} x ${formatCurrency(product.price)}
                     </p>
                   </div>
                 </div>
                 <p className="font-medium text-gray-900">
-                  ${(product.price * product.quantity).toFixed(2)}
+                  ${formatCurrency(product.price * product.quantity)}
                 </p>
               </div>
             ))}
           </div>
 
-          <div className="border-t border-gray-200 pt-4 mt-4">
-            <div className="flex justify-between items-center">
-              <p className="text-gray-600">Total de productos: {getTotalQuantity()}</p>
-              <p className="text-xl font-bold text-gray-900">
-                Total: ${getTotalPrice().toFixed(2)}
-              </p>
+          {/* Shipping Selection */}
+          <div className="border-t border-gray-200 pt-4">
+            <h3 className="font-medium text-gray-900 mb-3">Tipo de envío</h3>
+            <div className="space-y-2">
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="shipping"
+                  value="bogota"
+                  checked={shippingType === 'bogota'}
+                  onChange={() => setShippingType('bogota')}
+                  className="text-[var(--primary)] focus:ring-[var(--primary)]"
+                />
+                <span>Bogotá - ${formatCurrency(12000)}</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="shipping"
+                  value="nacional"
+                  checked={shippingType === 'nacional'}
+                  onChange={() => setShippingType('nacional')}
+                  className="text-[var(--primary)] focus:ring-[var(--primary)]"
+                />
+                <span>Nacional - ${formatCurrency(15000)}</span>
+              </label>
             </div>
-            <p className="text-sm text-gray-500 text-right">
-              Incluye ${(getTotalPrice() * (0.1242 / 1.1242)).toFixed(2)} de impuestos (12.42%)
-            </p>
+          </div>
+
+          <div className="border-t border-gray-200 pt-4 mt-4">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <p className="text-gray-600">Total de productos: {getTotalQuantity()}</p>
+                <p className="text-gray-600">Subtotal (incluye impuestos): ${formatCurrency(subtotal)}</p>
+              </div>
+              <div className="flex justify-between items-center">
+                <p className="text-gray-600">Costo de envío:</p>
+                <p className="text-gray-600">${formatCurrency(shippingCost)}</p>
+              </div>
+              <div className="flex justify-between items-center pt-2 border-t border-gray-200">
+                <p className="text-xl font-bold text-gray-900">Total a pagar:</p>
+                <p className="text-xl font-bold text-gray-900">${formatCurrency(total)}</p>
+              </div>
+            </div>
           </div>
         </>
       )}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import useStore from "@/store/store";
 import Image from "next/image";
+import { formatCurrency } from '@/utils/format'
 
 interface Categoria {
   id: string;
@@ -77,7 +78,7 @@ export function ListProducts({ products }: ListProductsProps) {
             <div className="space-y-2">
               {product.price !== undefined && product.price !== null && (
                 <p className="text-lg font-bold text-[var(--primary)]">
-                  ${product.price.toFixed(2)}
+                  ${formatCurrency(product.price)}
                 </p>
               )}
 

@@ -6,6 +6,7 @@ import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { CartClearer } from "./CartClearer";
 import { PayUStatusHandler } from "./PayUStatusHandler";
+import { formatCurrency } from '@/utils/format'
 
 export default async function OrderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -38,8 +39,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
             ) : (
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Order #{order.id}</h1>
-                  <p className="text-gray-600">Complete your purchase</p>
+                  <h1 className="text-2xl font-bold text-gray-900">Id de la orden: #{order.id}</h1>
                 </div>
                 <div className="px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
                   {order.status}
@@ -64,12 +64,12 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                       <div>
                         <h3 className="font-medium text-gray-900">{item.product.nombre}</h3>
                         <p className="text-sm text-gray-600">
-                          {item.quantity} x ${item.price.toFixed(2)}
+                          {item.quantity} x ${formatCurrency(item.price)}
                         </p>
                       </div>
                     </div>
                     <p className="font-medium text-gray-900">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      ${formatCurrency(item.price * item.quantity)}
                     </p>
                   </div>
                 ))}
@@ -77,7 +77,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                   <div className="flex justify-between items-center">
                     <p className="text-gray-600">Total de productos: {order.itemsInOrder}</p>
                     <p className="text-xl font-bold text-gray-900">
-                      Total: ${order.total.toFixed(2)}
+                      Subtotal: ${formatCurrency(order.total)}
                     </p>
                   </div>
                 </div>

@@ -1,4 +1,5 @@
 import { getCategoriesWithProducts, getProductsWithCategories } from "@/actions/summary-actions"
+import { formatCurrency } from '@/utils/format'
 
 export async function SummaryDashboard() {
   const categoriesResponse = await getCategoriesWithProducts();
@@ -27,7 +28,7 @@ export async function SummaryDashboard() {
                     <li key={product.id} className="flex items-center justify-between py-1">
                       <span>{product.nombre}</span>
                       <div className="flex gap-2">
-                        <span className="text-[var(--secondary)]">${product.price || 0}</span>
+                        <span className="text-[var(--secondary)]">${formatCurrency(product.price || 0)}</span>
                         <span className="text-[var(--secondary)]">Stock: {product.inStock || 0}</span>
                       </div>
                     </li>
@@ -60,7 +61,7 @@ export async function SummaryDashboard() {
                     <td className="p-4 text-[var(--foreground)]">
                       {product.categorias.map(cat => cat.nombre).join(', ') || 'Uncategorized'}
                     </td>
-                    <td className="p-4 text-[var(--foreground)]">${product.price || 0}</td>
+                    <td className="p-4 text-[var(--foreground)]">${formatCurrency(product.price || 0)}</td>
                     <td className="p-4 text-[var(--foreground)]">{product.inStock || 0}</td>
                   </tr>
                 ))}

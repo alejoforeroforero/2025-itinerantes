@@ -2,6 +2,7 @@
 import useStore from "@/store/store";
 import { Trash2, Plus, Minus } from "lucide-react";
 import Link from "next/link";
+import { formatCurrency } from '@/utils/format'
 
 export default function CartPage() {
   const products = useStore((state) => state.products);
@@ -37,10 +38,7 @@ export default function CartPage() {
                   </h2>
                   <div className="space-y-1">
                     <p className="text-gray-600 text-sm">
-                      Precio unitario: ${product.price.toFixed(2)}
-                    </p>
-                    <p className="text-gray-800 font-medium">
-                      Total: ${(product.price * product.quantity).toFixed(2)}
+                      Precio unitario: ${formatCurrency(product.price)}
                     </p>
                   </div>
                 </div>
@@ -81,17 +79,17 @@ export default function CartPage() {
               <div className="space-y-2">
                 <p>Total de productos: {getTotalQuantity()}</p>
                 <p className="text-2xl font-bold">
-                  Precio total: ${getTotalPrice().toFixed(2)}
+                  Subtotal: ${formatCurrency(getTotalPrice())}
                 </p>
                 <p className="text-sm text-gray-500">
-                  Incluye ${(getTotalPrice() * (0.1242 / 1.1242)).toFixed(2)} de impuestos (12.42%)
+                  Incluye ${formatCurrency(getTotalPrice() * (0.1242 / 1.1242))} de impuestos (12.42%)
                 </p>
               </div>
               <Link
                 className="bg-[var(--primary)] text-white px-6 py-2 rounded-lg hover:bg-[var(--accent)] transition-colors font-medium"
                 href="/checkout/address"
               >
-                Checkout
+                Finalizar pedido
               </Link>
             </div>
           </div>

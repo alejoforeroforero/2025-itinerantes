@@ -147,4 +147,53 @@ export const getOrdersByStatus = async (status?: OrderStatus) => {
     console.error('Error fetching orders by status:', error);
     return [];
   }
+};
+
+// Descuenta el stock de los productos de una orden
+export const discountOrderStock = async (orderId: string) => {
+  try {
+    // Buscar la orden y verificar su estado
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        orderItems: true
+      }
+    });
+    if (!order) throw new Error('Order not found');
+    if (order.status !== OrderStatus.PENDING) {
+      // Si la orden ya fue pagada, no descontar stock de nuevo
+      return false;
+    }
+    // Agrupar los items por productId y sumar las cantidades
+    const groupedItems = order.orderItems.reduce((acc, item) => {
+      if (!acc[item.productId]) {
+        acc[item.productId] = 0;
+      }
+      acc[item.productId] += item.quantity;
+      return acc;
+    }, {} as Record<string, number>);
+    // Descontar el stock agrupado
+    for (const [productId, quantity] of Object.entries(groupedItems)) {
+      await prisma.producto.update({
+        where: { id: productId },
+        data: {
+          inStock: {
+            decrement: quantity
+          }
+        }
+      });
+    }
+    // Marcar la orden como pagada
+    await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        status: OrderStatus.PAID,
+        paidAt: new Date()
+      }
+    });
+    return true;
+  } catch (error) {
+    console.error('Error discounting stock:', error);
+    return false;
+  }
 }; 

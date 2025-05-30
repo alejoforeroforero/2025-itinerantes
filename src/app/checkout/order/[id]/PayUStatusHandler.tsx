@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { updateOrderStatus } from '@/actions/order-actions';
+import { discountOrderStock } from '@/actions/order-actions';
 import useStore from '@/store/store';
 import { AlertCircle, CheckCircle } from 'lucide-react';
-import { OrderStatus } from '@prisma/client';
 
 export const PayUStatusHandler = ({ orderId }: { orderId: string }) => {
   const searchParams = useSearchParams();
@@ -18,12 +17,12 @@ export const PayUStatusHandler = ({ orderId }: { orderId: string }) => {
     const handlePayUStatus = async () => {
       if (status === 'success') {
         try {
-          // Update order status to PAID
-          await updateOrderStatus(orderId, OrderStatus.PAID);
+          // Descontar stock y marcar la orden como pagada
+          await discountOrderStock(orderId);
           // Clear the cart
           clearCart();
         } catch (error) {
-          console.error('Error updating order status:', error);
+          console.error('Error discounting stock:', error);
         }
       }
     };
