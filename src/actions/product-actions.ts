@@ -196,3 +196,7 @@ export async function getProductDataBySlug(slug: string) {
     };
   }
 }
+
+// const uploadImage = async (file: File) => {
+
+// };
