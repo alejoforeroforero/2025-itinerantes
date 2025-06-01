@@ -3,7 +3,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import * as yup from "yup";
-import { v2 as cloudinary } from 'cloudinary';
+import { getCloudinary } from '@/lib/cloudinary';
 
 interface ProductData {
   nombre: string;
@@ -23,12 +23,6 @@ const schema = yup.object().shape({
   price: yup.number().min(0),
   categoriasIds: yup.array().of(yup.string()),
   images: yup.array().of(yup.string().url('Invalid image URL')),
-});
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 export const uploadImage = async (file: File): Promise<string> => {
@@ -52,6 +46,7 @@ export const uploadImage = async (file: File): Promise<string> => {
     const dataURI = `data:${file.type};base64,${base64Image}`;
 
     // Subir la imagen a Cloudinary
+    const cloudinary = getCloudinary();
     const result = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload(
         dataURI,
