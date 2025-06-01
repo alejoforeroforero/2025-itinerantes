@@ -32,7 +32,19 @@ export const getOrderById = async (id: string) => {
       include: {
         orderItems: {
           include: {
-            product: true
+            product: {
+              select: {
+                id: true,
+                nombre: true,
+                description: true,
+                price: true,
+                images: true,
+                inStock: true,
+                slug: true,
+                createdAt: true,
+                updatedAt: true
+              }
+            }
           }
         }
       }

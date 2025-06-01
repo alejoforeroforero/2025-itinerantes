@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { getProductDataBySlug } from "@/actions/product-actions";
-import Image from "next/image";
-import { DEFAULT_IMAGE } from "@/config/defaults";
 import { AddToCartButton } from "@/components/website/cart/AddToCartButton";
 import Link from "next/link";
 import { StockDisplay } from "@/components/website/product/StockDisplay";
 import { formatCurrency } from '@/utils/format'
+import { ProductImageCarousel } from "@/components/website/product/ProductImageCarousel";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -50,16 +49,8 @@ export default async function ProductPage({ params }: Props) {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Product Image */}
-          <div className="p-6 flex items-center justify-center">
-            <div className="relative w-full max-w-md h-64">
-              <Image
-                src={DEFAULT_IMAGE}
-                alt={nombre}
-                fill
-                className="object-cover rounded-lg"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-            </div>
+          <div className="p-6">
+            <ProductImageCarousel images={res.product.images} productName={nombre} />
           </div>
 
           {/* Product Content */}

@@ -4,6 +4,8 @@ import Link from "next/link";
 import useStore from "@/store/store";
 import Image from "next/image";
 import { formatCurrency } from '@/utils/format'
+import { DEFAULT_IMAGE } from "@/config/defaults";
+import { getValidImageUrl } from '@/utils/format';
 
 interface Categoria {
   id: string;
@@ -19,6 +21,7 @@ interface Product {
   price: number | null;
   inStock: number | null;
   categorias?: Categoria[];
+  images?: string[];
 }
 
 interface ListProductsProps {
@@ -31,13 +34,25 @@ export function ListProducts({ products }: ListProductsProps) {
   const handleAddToCart = (product: Product) => {
     if (product.price === null || product.inStock === null || product.inStock <= 0) return;
     
+    console.log('Producto original en ListProducts:', {
+      id: product.id,
+      nombre: product.nombre,
+      price: product.price,
+      inStock: product.inStock,
+      images: product.images,
+      fullProduct: product
+    });
+    
     const productCart = {
       id: product.id,
       name: product.nombre,
       price: product.price,
       quantity: 1,
       stock: product.inStock,
+      images: product.images || []
     };
+    
+    console.log('Producto formateado para el carrito:', productCart);
     
     useStore.getState().addProduct(productCart);
   };
@@ -58,7 +73,7 @@ export function ListProducts({ products }: ListProductsProps) {
         >
           <div className="w-full h-48 relative">
             <Image
-              src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?q=80&w=1000&auto=format&fit=crop"
+              src={getValidImageUrl(product.images?.[0], DEFAULT_IMAGE)}
               alt={product.nombre}
               fill
               className="object-cover"

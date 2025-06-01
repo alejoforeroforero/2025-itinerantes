@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import * as yup from "yup";
+import { v2 as cloudinary } from 'cloudinary';
 
 interface ProductData {
   nombre: string;
@@ -11,6 +12,7 @@ interface ProductData {
   inStock?: number;
   price?: number;
   categoriasIds: string[];
+  images?: string[];
 }
 
 const schema = yup.object().shape({
@@ -20,7 +22,63 @@ const schema = yup.object().shape({
   inStock: yup.number().min(0),
   price: yup.number().min(0),
   categoriasIds: yup.array().of(yup.string()),
+  images: yup.array().of(yup.string().url('Invalid image URL')),
 });
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+export const uploadImage = async (file: File): Promise<string> => {
+  try {
+    // Verificar que las variables de entorno estén configuradas
+    if (!process.env.CLOUDINARY_CLOUD_NAME || 
+        !process.env.CLOUDINARY_API_KEY || 
+        !process.env.CLOUDINARY_API_SECRET) {
+      throw new Error('Cloudinary credentials are not configured');
+    }
+
+    // Verificar el tipo de archivo
+    if (!file.type.startsWith('image/')) {
+      throw new Error('File must be an image');
+    }
+
+    // Convertir el archivo a base64
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const base64Image = buffer.toString('base64');
+    const dataURI = `data:${file.type};base64,${base64Image}`;
+
+    // Subir la imagen a Cloudinary
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload(
+        dataURI,
+        {
+          folder: 'itinerantes',
+          resource_type: 'auto',
+        },
+        (error, result) => {
+          if (error) {
+            console.error('Cloudinary upload error:', error);
+            reject(new Error('Error uploading to Cloudinary'));
+          }
+          resolve(result);
+        }
+      );
+    });
+
+    if (!result || !(result as { secure_url: string }).secure_url) {
+      throw new Error('No secure URL returned from Cloudinary');
+    }
+
+    return (result as { secure_url: string }).secure_url;
+  } catch (error) {
+    console.error('Error in uploadImage:', error);
+    throw new Error(error instanceof Error ? error.message : 'Error al subir la imagen');
+  }
+};
 
 export async function createProduct(
   previousState: unknown,
@@ -35,6 +93,7 @@ export async function createProduct(
       : undefined,
     price: formData.get("price") ? Number(formData.get("price")) : undefined,
     categoriasIds: formData.getAll("categorias").map((id) => id.toString()),
+    images: formData.getAll("images").map((image) => image.toString()),
   };
 
   try {
@@ -47,6 +106,7 @@ export async function createProduct(
         description: productData.description,
         inStock: productData.inStock,
         price: productData.price,
+        images: productData.images,
         categorias:
           productData.categoriasIds.length > 0
             ? {
@@ -69,6 +129,7 @@ export async function createProduct(
         inStock: undefined,
         price: undefined,
         categoriasIds: [],
+        images: [],
       },
     };
   } catch (error) {
@@ -105,6 +166,9 @@ export async function updateProduct(
       : undefined,
     price: formData.get("price") ? Number(formData.get("price")) : undefined,
     categoriasIds: formData.getAll("categorias").map((id) => id.toString()),
+    images: formData.getAll("images")
+      .map((image) => image.toString())
+      .filter(url => url.startsWith('http')), // Filter out invalid URLs
   };
 
   try {
@@ -118,6 +182,7 @@ export async function updateProduct(
         description: productData.description,
         inStock: productData.inStock,
         price: productData.price,
+        images: productData.images,
         categorias: {
           set: [], // First disconnect all categories
           connect: productData.categoriasIds.map((id) => ({ id })), // Then connect the new ones
@@ -156,7 +221,14 @@ export async function updateProduct(
 export async function getProducts() {
   try {
     const products = await prisma.producto.findMany({
-      include: {
+      select: {
+        id: true,
+        nombre: true,
+        slug: true,
+        description: true,
+        inStock: true,
+        price: true,
+        images: true,
         categorias: true,
       },
     });
@@ -173,7 +245,16 @@ export async function getProductDataBySlug(slug: string) {
       where: {
         slug: slug,
       },
-      include: {
+      select: {
+        id: true,
+        nombre: true,
+        slug: true,
+        description: true,
+        inStock: true,
+        price: true,
+        images: true,
+        createdAt: true,
+        updatedAt: true,
         categorias: {
           select: {
             id: true,
@@ -196,7 +277,3 @@ export async function getProductDataBySlug(slug: string) {
     };
   }
 }
-
-// const uploadImage = async (file: File) => {
-
-// };

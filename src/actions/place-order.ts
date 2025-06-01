@@ -130,11 +130,15 @@ export const placeOrder = async (
                     phone: address.phone,
                     orderItems: {
                         createMany: {
-                            data: storeProducts.map(product => ({
-                                productId: product.id,
-                                quantity: product.quantity,
-                                price: product.price
-                            }))
+                            data: storeProducts.map(product => {
+                                const dbProduct = products.find(p => p.id === product.id);
+                                if (!dbProduct) throw new Error(`Product ${product.id} not found`);
+                                return {
+                                    productId: product.id,
+                                    quantity: product.quantity,
+                                    price: dbProduct.price!
+                                };
+                            })
                         }
                     }
                 },

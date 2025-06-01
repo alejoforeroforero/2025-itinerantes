@@ -1,9 +1,9 @@
 'use client';
 
-import { createProduct, updateProduct } from "@/actions/product-actions";
+import { createProduct, updateProduct, uploadImage } from "@/actions/product-actions";
 import { useActionState } from "react";
 import { useState } from "react";
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, X } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -13,6 +13,7 @@ interface Product {
   inStock?: number;
   price?: number;
   categorias: { id: string; nombre: string; }[];
+  images?: string[];
 }
 
 interface ActionResponse {
@@ -26,6 +27,7 @@ interface ActionResponse {
     inStock?: number;
     price?: number;
     categoriasIds: string[];
+    images?: string[];
   };
 }
 
@@ -38,6 +40,8 @@ interface ProductFormProps {
 export function ProductForm({ products, categories }: ProductFormProps) {
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [isListExpanded, setIsListExpanded] = useState(true);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
   const [data, action, isPending] = useActionState<ActionResponse | undefined, FormData>(
     selectedProductId 
       ? (prev: ActionResponse | undefined, formData: FormData) => updateProduct(selectedProductId, prev, formData)
@@ -55,6 +59,28 @@ export function ProductForm({ products, categories }: ProductFormProps) {
     if (slugInput) {
       slugInput.value = generateSlug(nameValue);
     }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    setIsUploading(true);
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const imageUrl = await uploadImage(file);
+        setUploadedImages(prev => [...prev, imageUrl]);
+      }
+    } catch (error) {
+      console.error('Error uploading images:', error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setUploadedImages(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleProductClick = (product: { id: string; nombre: string }) => {
@@ -75,16 +101,34 @@ export function ProductForm({ products, categories }: ProductFormProps) {
         Array.from(categoriasSelect.options).forEach(option => {
           option.selected = categoryIds.includes(option.value);
         });
+
+        // Cargar imágenes existentes
+        setUploadedImages(selectedProduct.images || []);
       }
     }
   };
 
   const handleCancelEdit = () => {
     setSelectedProductId(null);
+    setUploadedImages([]);
     const form = document.querySelector('form') as HTMLFormElement;
     if (form) {
       form.reset();
     }
+  };
+
+  const handleSubmit = async (formData: FormData) => {
+    // Clear existing images from FormData
+    formData.delete('images');
+    
+    // Add only valid image URLs to FormData
+    uploadedImages.forEach(imageUrl => {
+      if (imageUrl && imageUrl.startsWith('http')) {
+        formData.append('images', imageUrl);
+      }
+    });
+    
+    await action(formData);
   };
 
   return (
@@ -118,7 +162,7 @@ export function ProductForm({ products, categories }: ProductFormProps) {
       </div>
 
       <div className="summary-content">
-        <form action={action} className="form-container">
+        <form action={handleSubmit} className="form-container">
           <div className="form-group">
             <label htmlFor="nombre" className="form-label">Nombre</label>
             <input
@@ -198,7 +242,41 @@ export function ProductForm({ products, categories }: ProductFormProps) {
               ))}
             </select>
           </div>
-          
+
+          <div className="form-group">
+            <label htmlFor="images" className="form-label">Imágenes</label>
+            <input
+              type="file"
+              id="images"
+              name="images"
+              multiple
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="form-input"
+              disabled={isUploading}
+            />
+            {isUploading && <p className="text-sm text-gray-500">Subiendo imágenes...</p>}
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+              {uploadedImages.map((imageUrl, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={imageUrl}
+                    alt={`Imagen ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {data?.message && <p className="form-success">{data.message}</p>}
           {data?.error && <p className="form-error">{data.error}</p>}
           

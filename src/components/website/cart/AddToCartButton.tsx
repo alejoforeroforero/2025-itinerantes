@@ -17,6 +17,7 @@ interface ProductCart {
   price: number;
   quantity: number;
   stock: number;
+  images?: string[];
 }
 
 export function AddToCartButton({ product, disabled, className, children }: AddToCartButtonProps) {
@@ -25,13 +26,26 @@ export function AddToCartButton({ product, disabled, className, children }: AddT
 
   const handleAddToCart = () => {
     if (currentStock > 0) {
+      console.log('Producto original en AddToCartButton:', {
+        id: product.id,
+        nombre: product.nombre,
+        price: product.price,
+        inStock: currentStock,
+        images: product.images,
+        fullProduct: product
+      });
+
       const productCart: ProductCart = {
         id: product.id,
         name: product.nombre,
         price: product.price || 0,
         quantity: 1,
-        stock: currentStock
+        stock: currentStock,
+        images: product.images || []
       };
+
+      console.log('Producto formateado para el carrito:', productCart);
+      
       addProduct(productCart);
       setCurrentStock(prev => prev - 1);
     }

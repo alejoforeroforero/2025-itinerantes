@@ -3,6 +3,9 @@ import React from 'react'
 import useStore from '@/store/store'
 import { useShippingStore } from '@/store/shipping-store'
 import { formatCurrency } from '@/utils/format'
+import Image from 'next/image'
+import { DEFAULT_IMAGE } from '@/config/defaults'
+import { getValidImageUrl } from '@/utils/format'
 
 export const ProductsInCart = () => {
   const products = useStore((state) => state.products)
@@ -33,7 +36,15 @@ export const ProductsInCart = () => {
                 className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gray-100 rounded-md"></div>
+                  <div className="relative w-12 h-12 rounded-md overflow-hidden">
+                    <Image
+                      src={getValidImageUrl(product.images?.[0], DEFAULT_IMAGE)}
+                      alt={product.name}
+                      fill
+                      className="object-cover"
+                      sizes="48px"
+                    />
+                  </div>
                   <div>
                     <h3 className="font-medium text-gray-900">{product.name}</h3>
                     <p className="text-sm text-gray-600">
