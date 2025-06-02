@@ -67,7 +67,10 @@ export async function createCategory(
 export async function getCategories() {
   try {
     const categories = await prisma.categoria.findMany({
-      include: {
+      select: {
+        id: true,
+        nombre: true,
+        slug: true,
         productos: true,
       },
     });
@@ -202,10 +205,11 @@ export async function getCategoryWithProductsInfo( slug:string) {
               select: {
                 id: true,
                 nombre: true,
-                description:true,
-                inStock:true,
-                price:true,
+                description: true,
+                inStock: true,
+                price: true,
                 slug: true,
+                images: true,
               },
             },
           },

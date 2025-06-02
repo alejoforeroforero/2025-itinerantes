@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Navbar } from "@/components";
 import { Providers } from "@/components";
 import { Geist, Geist_Mono } from "next/font/google";
+import { getCategories } from "@/actions/category-actions";
+import { getProducts } from "@/actions/product-actions";
+import { CategoryTabs } from "@/components/website/products/CategoryTabs";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,6 +27,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const categories = await getCategories();
+  const products = await getProducts();
+
   return (
     <html lang="en">
       <body
@@ -31,7 +37,12 @@ export default async function RootLayout({
       >
         <Providers>
           <Navbar />
-          <section className="p-8">{children}</section>
+          <div className="sticky top-0 z-10 bg-white shadow-sm">
+            <CategoryTabs categories={categories} totalProducts={products.length} />
+          </div>
+          <main className="container mx-auto px-4 py-8">
+            {children}
+          </main>
         </Providers>
       </body>
     </html>

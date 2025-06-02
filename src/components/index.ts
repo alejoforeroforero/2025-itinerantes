@@ -9,3 +9,5 @@ export * from "./website/nav/Navbar";
 export * from "./auth/AuthProvider";
 export * from "./checkout/AddressForm";
 export * from "./providers/Providers";
+export * from './website/products/CategoryTabs';
+export * from './website/products/Pagination';

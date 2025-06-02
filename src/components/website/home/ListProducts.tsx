@@ -6,6 +6,7 @@ import Image from "next/image";
 import { formatCurrency } from '@/utils/format'
 import { DEFAULT_IMAGE } from "@/config/defaults";
 import { getValidImageUrl } from '@/utils/format';
+import { useState } from 'react';
 
 interface Categoria {
   id: string;
@@ -30,18 +31,10 @@ interface ListProductsProps {
 
 export function ListProducts({ products }: ListProductsProps) {
   const cartProducts = useStore((state) => state.products);
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
 
   const handleAddToCart = (product: Product) => {
     if (product.price === null || product.inStock === null || product.inStock <= 0) return;
-    
-    console.log('Producto original en ListProducts:', {
-      id: product.id,
-      nombre: product.nombre,
-      price: product.price,
-      inStock: product.inStock,
-      images: product.images,
-      fullProduct: product
-    });
     
     const productCart = {
       id: product.id,
@@ -52,8 +45,6 @@ export function ListProducts({ products }: ListProductsProps) {
       images: product.images || []
     };
     
-    console.log('Producto formateado para el carrito:', productCart);
-    
     useStore.getState().addProduct(productCart);
   };
 
@@ -63,9 +54,12 @@ export function ListProducts({ products }: ListProductsProps) {
     return (product.inStock || 0) - cartProduct.quantity;
   };
 
+  const handleImageError = (productId: string) => {
+    setImageErrors(prev => new Set(prev).add(productId));
+  };
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
-      
       {products.map((product) => (
         <div
           key={product.id}
@@ -73,11 +67,12 @@ export function ListProducts({ products }: ListProductsProps) {
         >
           <div className="w-full h-48 relative">
             <Image
-              src={getValidImageUrl(product.images?.[0], DEFAULT_IMAGE)}
+              src={imageErrors.has(product.id) ? DEFAULT_IMAGE : getValidImageUrl(product.images?.[0], DEFAULT_IMAGE)}
               alt={product.nombre}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              onError={() => handleImageError(product.id)}
             />
           </div>
           <div className="p-4">
