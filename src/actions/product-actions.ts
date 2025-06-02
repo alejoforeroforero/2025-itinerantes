@@ -272,3 +272,96 @@ export async function getProductDataBySlug(slug: string) {
     };
   }
 }
+
+export async function deleteProduct(id: string) {
+  try {
+    console.log('Starting deleteProduct action for id:', id);
+    
+    // First check if the product exists
+    const product = await prisma.producto.findUnique({
+      where: { id },
+      include: {
+        categorias: true,
+        orderItems: {
+          include: {
+            order: true
+          }
+        }
+      }
+    });
+
+    console.log('Found product:', product);
+
+    if (!product) {
+      console.log('Product not found');
+      return {
+        success: false,
+        error: "Producto no encontrado"
+      };
+    }
+
+    // Check if product is associated with any active orders (PENDING or PAID)
+    const activeOrders = product.orderItems.filter(item => 
+      item.order.status === 'PENDING' || item.order.status === 'PAID'
+    );
+
+    if (activeOrders.length > 0) {
+      console.log('Product has active orders:', activeOrders.length);
+      return {
+        success: false,
+        error: "No se puede eliminar el producto porque está asociado a órdenes activas"
+      };
+    }
+
+    // Delete all orderItems associated with this product first
+    console.log('Deleting associated orderItems...');
+    await prisma.orderItem.deleteMany({
+      where: {
+        productId: id
+      }
+    });
+
+    // Delete the product
+    console.log('Attempting to delete product...');
+    await prisma.producto.delete({
+      where: { id }
+    });
+    console.log('Product deleted successfully');
+
+    revalidatePath("/admin/productos");
+    revalidatePath("/admin/summary");
+
+    return {
+      success: true,
+      message: "Producto eliminado exitosamente"
+    };
+  } catch (error) {
+    console.error("Error in deleteProduct:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Error al eliminar el producto"
+    };
+  }
+}
+
+export const checkProductStatus = async (productId: string) => {
+  try {
+    const product = await prisma.producto.findUnique({
+      where: { id: productId }
+    });
+
+    if (!product) {
+      return {
+        exists: false
+      };
+    }
+
+    return {
+      exists: true
+    };
+  } catch (error) {
+    console.error('Error checking product status:', error);
+    throw new Error('Error al verificar el estado del producto');
+  }
+};
+

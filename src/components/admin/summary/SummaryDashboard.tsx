@@ -1,5 +1,6 @@
 import { getCategoriesWithProducts, getProductsWithCategories } from "@/actions/summary-actions"
 import { formatCurrency } from '@/utils/format'
+import { DeleteProductButton } from './DeleteProductButton'
 
 export async function SummaryDashboard() {
   const categoriesResponse = await getCategoriesWithProducts();
@@ -11,6 +12,8 @@ export async function SummaryDashboard() {
 
   const categories = categoriesResponse.data;
   const allProducts = productsResponse.data;
+
+  console.log('Products data:', allProducts);
 
   return (
     <div className="space-y-8">
@@ -52,19 +55,28 @@ export async function SummaryDashboard() {
                   <th className="text-left p-4 text-[var(--primary)] font-medium">Categories</th>
                   <th className="text-left p-4 text-[var(--primary)] font-medium">Price</th>
                   <th className="text-left p-4 text-[var(--primary)] font-medium">Stock</th>
+                  <th className="text-left p-4 text-[var(--primary)] font-medium w-[200px]">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {allProducts.map((product) => (
-                  <tr key={product.id} className="border-b border-gray-200">
-                    <td className="p-4 text-[var(--foreground)]">{product.nombre}</td>
-                    <td className="p-4 text-[var(--foreground)]">
-                      {product.categorias.map(cat => cat.nombre).join(', ') || 'Uncategorized'}
-                    </td>
-                    <td className="p-4 text-[var(--foreground)]">${formatCurrency(product.price || 0)}</td>
-                    <td className="p-4 text-[var(--foreground)]">{product.inStock || 0}</td>
-                  </tr>
-                ))}
+                {allProducts.map((product) => {
+                  console.log('Rendering product:', product);
+                  return (
+                    <tr key={product.id} className="border-b border-gray-200">
+                      <td className="p-4 text-[var(--foreground)]">{product.nombre}</td>
+                      <td className="p-4 text-[var(--foreground)]">
+                        {product.categorias.map(cat => cat.nombre).join(', ') || 'Uncategorized'}
+                      </td>
+                      <td className="p-4 text-[var(--foreground)]">${formatCurrency(product.price || 0)}</td>
+                      <td className="p-4 text-[var(--foreground)]">{product.inStock || 0}</td>
+                      <td className="p-4 w-[200px]">
+                        <DeleteProductButton 
+                          productId={product.id}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

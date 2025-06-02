@@ -7,6 +7,7 @@ import { formatCurrency } from "@/utils/format";
 import Image from "next/image";
 import { DEFAULT_IMAGE } from "@/config/defaults";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function CartPage() {
   const products = useStore((state) => state.products);
@@ -14,11 +15,27 @@ export default function CartPage() {
   const addProduct = useStore((state) => state.addProduct);
   const getTotalQuantity = useStore((state) => state.getTotalQuantity);
   const getTotalPrice = useStore((state) => state.getTotalPrice);
+  const validateAndUpdatePrices = useStore((state) => state.validateAndUpdatePrices);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (mounted && products.length > 0) {
+      validateAndUpdatePrices().then(result => {
+        if (result?.hasChanges) {
+          toast.info(
+            "Algunos productos han sido eliminados del carrito porque ya no están disponibles.",
+            {
+              duration: 5000,
+            }
+          );
+        }
+      });
+    }
+  }, [mounted, products.length, validateAndUpdatePrices]);
 
   if (!mounted) {
     return null;
@@ -35,7 +52,6 @@ export default function CartPage() {
       ) : (
         <div className="space-y-6">
           {products.map((product) => {
-            console.log("Producto individual:", product);
             return (
               <div
                 key={product.id}
@@ -88,7 +104,11 @@ export default function CartPage() {
                     </button>
                   </div>
                   <button
-                    onClick={() => removeProduct(product)}
+                    onClick={() => {
+                      removeProduct(product).catch(error => {
+                        toast.error(error.message);
+                      });
+                    }}
                     className="p-2 text-red-600 hover:bg-red-100 rounded-full transition-colors"
                     aria-label="Eliminar producto"
                   >

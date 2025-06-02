@@ -8,6 +8,7 @@ import { placeOrder } from "@/actions/place-order";
 import { formatCurrency } from '@/utils/format'
 import { findPendingOrder, getOrderById } from "@/actions/order-actions";
 import { PayUSection } from "./PayUSection";
+import { toast } from "sonner";
 
 interface Order {
   id: string;
@@ -43,6 +44,7 @@ export default function PlaceOrder({ initialOrderId }: PlaceOrderProps) {
   const address = useAddressStore((state) => state.address);
   const { getShippingCost } = useShippingStore();
   const shippingCost = getShippingCost();
+  const validateAndUpdatePrices = useStore((state) => state.validateAndUpdatePrices);
 
   const subtotal = useStore((state) => state.getTotalPrice());
   const total = subtotal + shippingCost;
@@ -107,14 +109,82 @@ export default function PlaceOrder({ initialOrderId }: PlaceOrderProps) {
     fetchOrder();
   }, [orderId, mounted]);
 
+  useEffect(() => {
+    const validatePrices = async () => {
+      if (products.length > 0) {
+        const result = await validateAndUpdatePrices();
+        if (result?.hasChanges) {
+          toast.error(
+            "Los precios de algunos productos han cambiado. Por favor, revisa tu carrito antes de continuar.",
+            {
+              duration: 5000,
+            }
+          );
+          return false;
+        }
+      }
+      return true;
+    };
+
+    validatePrices();
+  }, [products.length, validateAndUpdatePrices]);
+
+  const handlePlaceOrder = async () => {
+    setIsLoading(true);
+    try {
+      // Validar precios antes de proceder
+      const pricesValid = await validateAndUpdatePrices();
+      if (pricesValid?.hasChanges) {
+        toast.error(
+          "Los precios de algunos productos han cambiado. Por favor, revisa tu carrito antes de continuar.",
+          {
+            duration: 5000,
+          }
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      const storeProducts = products.map((product) => ({
+        id: product.id,
+        quantity: product.quantity,
+        price: product.price,
+      }));
+
+      const response = await placeOrder(storeProducts, address!, shippingCost);
+      if (response.ok && response.order) {
+        setOrder({
+          ...response.order,
+          shippingCost,
+          orderItems: products.map(p => ({
+            id: p.id,
+            quantity: p.quantity,
+            price: p.price,
+            product: {
+              id: p.id,
+              nombre: p.name
+            }
+          }))
+        });
+      } else {
+        toast.error(response.message || "Error al crear el pedido");
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
+      toast.error("Error al crear el pedido");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (!mounted) {
     return null;
   }
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <div className="flex justify-center items-center min-h-[200px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary)]"></div>
       </div>
     );
   }
@@ -168,6 +238,16 @@ export default function PlaceOrder({ initialOrderId }: PlaceOrderProps) {
 
       <div className="flex justify-between">
         <PayUSection orderId={orderId} amount={total} />
+      </div>
+
+      <div className="flex justify-center">
+        <button
+          onClick={handlePlaceOrder}
+          disabled={!address || products.length === 0}
+          className="bg-[var(--primary)] text-white px-8 py-3 rounded-lg hover:bg-[var(--accent)] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Proceder al pago
+        </button>
       </div>
     </div>
   );
