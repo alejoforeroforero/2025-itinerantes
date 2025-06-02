@@ -127,6 +127,12 @@ export const updateOrderStatus = async (orderId: string, status: OrderStatus) =>
     if (existingOrder.status === 'SHIPPED' && status !== 'COMPLETED') {
       throw new Error('Un pedido enviado solo puede ser marcado como completado');
     }
+    if (existingOrder.status === 'PENDING' && status !== 'ARCHIVED' && status !== 'PAID') {
+      throw new Error('Un pedido pendiente solo puede ser archivado o marcado como pagado');
+    }
+    if (existingOrder.status === 'ARCHIVED') {
+      throw new Error('Un pedido archivado no puede cambiar de estado');
+    }
 
     const updatedOrder = await prisma.order.update({
       where: { id: orderId },
@@ -165,7 +171,11 @@ export const getOrdersByStatus = async (status?: OrderStatus) => {
     const orders = await prisma.order.findMany({
       where: status ? { 
         status: status 
-      } : undefined,
+      } : {
+        status: {
+          not: OrderStatus.ARCHIVED
+        }
+      },
       include: {
         orderItems: {
           include: {

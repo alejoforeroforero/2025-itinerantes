@@ -21,8 +21,7 @@ export function OrderStatusActions({ orderId, currentStatus }: OrderStatusAction
       setIsLoading(true);
       console.log('Attempting to update order status:', { orderId, currentStatus, newStatus });
       
-      const status = newStatus as OrderStatus;
-      const updatedOrder = await updateOrderStatus(orderId, status);
+      const updatedOrder = await updateOrderStatus(orderId, newStatus);
       
       if (!updatedOrder) {
         throw new Error('No se pudo actualizar el pedido');
@@ -43,6 +42,15 @@ export function OrderStatusActions({ orderId, currentStatus }: OrderStatusAction
   return (
     <div className="space-y-2">
       <div className="flex gap-2">
+        {currentStatus === OrderStatus.PENDING && (
+          <button
+            onClick={() => handleStatusChange(OrderStatus.ARCHIVED)}
+            disabled={isLoading}
+            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:opacity-50"
+          >
+            {isLoading ? 'Actualizando...' : 'Archivar Pedido'}
+          </button>
+        )}
         {currentStatus === OrderStatus.PAID && (
           <button
             onClick={() => handleStatusChange(OrderStatus.SHIPPED)}

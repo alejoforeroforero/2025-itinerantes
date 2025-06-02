@@ -119,6 +119,7 @@ enum OrderStatus {
   PAID
   SHIPPED
   COMPLETED
+  ARCHIVED
 }
 
 model OrderItem {
