@@ -60,14 +60,14 @@ export function OrdersList({ initialOrders }: OrdersListProps) {
           Pagados
         </button>
         <button
-          onClick={() => setSelectedStatus('DELIVERED')}
+          onClick={() => setSelectedStatus('SHIPPED')}
           className={`px-4 py-2 rounded-md transition-colors ${
-            selectedStatus === 'DELIVERED'
+            selectedStatus === 'SHIPPED'
               ? 'bg-purple-200 text-purple-900'
               : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
           }`}
         >
-          Entregados
+          Enviados
         </button>
         <button
           onClick={() => setSelectedStatus('COMPLETED')}
@@ -107,12 +107,12 @@ export function OrdersList({ initialOrders }: OrdersListProps) {
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                     ${order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
                       order.status === 'PAID' ? 'bg-blue-100 text-blue-800' :
-                      order.status === 'DELIVERED' ? 'bg-purple-100 text-purple-800' :
+                      order.status === 'SHIPPED' ? 'bg-purple-100 text-purple-800' :
                       order.status === 'COMPLETED' ? 'bg-green-100 text-green-800' : 
                       'bg-gray-100 text-gray-800'}`}>
                     {order.status === 'PENDING' ? 'Pendiente' :
                      order.status === 'PAID' ? 'Pagado' :
-                     order.status === 'DELIVERED' ? 'Entregado' :
+                     order.status === 'SHIPPED' ? 'Enviado' :
                      order.status === 'COMPLETED' ? 'Completado' :
                      order.status}
                   </span>

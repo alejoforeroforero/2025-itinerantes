@@ -117,7 +117,7 @@ model Order {
 enum OrderStatus {
   PENDING
   PAID
-  DELIVERED
+  SHIPPED
   COMPLETED
 }
 

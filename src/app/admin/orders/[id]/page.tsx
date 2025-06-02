@@ -2,6 +2,7 @@ import { getOrderById } from "@/actions/order-actions";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatCurrency } from '@/utils/format'
+import { OrderStatusActions } from './OrderStatusActions';
 
 export default async function OrderDetailsPage({
   params,
@@ -38,21 +39,27 @@ export default async function OrderDetailsPage({
                     ? "bg-yellow-100 text-yellow-800"
                     : order.status === "PAID"
                     ? "bg-blue-100 text-blue-800"
-                    : order.status === "DELIVERED"
+                    : order.status === "SHIPPED"
                     ? "bg-purple-100 text-purple-800"
                     : order.status === "COMPLETED"
                     ? "bg-green-100 text-green-800"
                     : "bg-gray-100 text-gray-800"
                 }`}
               >
-                {order.status}
+                {order.status === 'PENDING' ? 'Pendiente' :
+                 order.status === 'PAID' ? 'Pagado' :
+                 order.status === 'SHIPPED' ? 'Enviado' :
+                 order.status === 'COMPLETED' ? 'Completado' :
+                 order.status}
               </span>
             </div>
           </div>
 
           {/* Order Information */}
           <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <OrderStatusActions orderId={order.id} currentStatus={order.status} />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
               {/* Customer Information */}
               <div className="space-y-4">
                 <h2 className="text-lg font-semibold text-[var(--primary)]">
