@@ -13,12 +13,17 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-
   const res = await getProductDataBySlug(slug);
 
+  if (!res.product) {
+    return {
+      title: 'Producto no encontrado',
+    };
+  }
+
   return {
-    title: res.product?.nombre,
-    description: res.product?.description,
+    title: res.product.nombre,
+    description: res.product.description || `Descubre ${res.product.nombre} - ${res.product.inStock ? 'Disponible' : 'Agotado'}`,
   };
 }
 

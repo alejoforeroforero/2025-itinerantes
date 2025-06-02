@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: 'Inicio',
+  description: 'Bienvenido a Itinerantes - Tu tienda de productos artesanales y únicos',
+};
+
 export const dynamic = 'force-dynamic';
 
 import { getProducts } from "@/actions/product-actions";
@@ -5,11 +12,12 @@ import { ListProducts } from "@/components";
 import { Pagination } from "@/components/website/products/Pagination";
 
 interface Props {
-  searchParams: { page?: string };
+  searchParams: Promise<{ page?: string }>;
 }
 
 export default async function Home({ searchParams }: Props) {
-  const page = Number(searchParams.page) || 1;
+  const resolvedParams = await searchParams;
+  const page = Number(resolvedParams.page) || 1;
   const productsPerPage = 10;
   
   const products = await getProducts();

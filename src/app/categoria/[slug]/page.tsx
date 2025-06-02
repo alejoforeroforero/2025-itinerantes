@@ -4,21 +4,29 @@ import { ListProducts, Pagination } from "@/components";
 
 interface Props {
   params: Promise<{ slug: string }>;
-  searchParams: { page?: string };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const res = await getCategoryWithProductsInfo(slug);
 
+  if (!res.category) {
+    return {
+      title: 'Categoría no encontrada',
+    };
+  }
+
   return {
-    title: res.category?.nombre,
+    title: res.category.nombre,
+    description: `Explora nuestra colección de ${res.category.nombre} - ${res.category.productos.length} productos disponibles`,
   };
 }
 
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { slug } = await params;
-  const page = Number(searchParams.page) || 1;
+  const resolvedSearchParams = await searchParams;
+  const page = Number(resolvedSearchParams.page) || 1;
   const productsPerPage = 10;
 
   const res = await getCategoryWithProductsInfo(slug);
