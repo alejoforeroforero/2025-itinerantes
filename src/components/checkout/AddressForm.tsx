@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { placeOrder } from "@/actions/place-order";
 import useStore from "@/store/store";
+import { useShippingStore } from "@/store/shipping-store";
 
 type FormInputs = {
   firstName: string;
@@ -26,6 +27,7 @@ export const AddressForm = () => {
 
   const router = useRouter();
   const products = useStore((state) => state.products);
+  const getShippingCost = useShippingStore((state) => state.getShippingCost);
 
   const setAddress = useAddressStore((state) => state.setAddress);
   const address = useAddressStore((state) => state.address);
@@ -41,8 +43,11 @@ export const AddressForm = () => {
       // Set the address in the store
       setAddress(data);
 
+      // Get shipping cost
+      const shippingCost = getShippingCost();
+
       // Create the order
-      const result = await placeOrder(products, data);
+      const result = await placeOrder(products, data, shippingCost);
 
       if (!result.ok) {
         console.error("Error creating order:", result.message);

@@ -1,30 +1,23 @@
 "use client";
 
-import { placeOrder } from "@/actions/place-order";
+import { useEffect, useState } from "react";
 import useStore from "@/store/store";
 import { useAddressStore } from "@/store/address-store";
 import { useShippingStore } from "@/store/shipping-store";
-import { useState, useEffect } from "react";
-// import { PaypalButton } from "./PaypalButton";
-import { getOrderById } from "@/actions/order-actions";
-import { PayUSection } from "./PayUSection";
+import { placeOrder } from "@/actions/place-order";
 import { formatCurrency } from '@/utils/format'
+import { findPendingOrder, getOrderById } from "@/actions/order-actions";
+import { PayUSection } from "./PayUSection";
 
 interface Order {
   id: string;
-  status: string;
   total: number;
   subTotal: number;
   tax: number;
+  shippingCost: number;
   itemsInOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
-  firstName: string;
-  lastName: string;
-  address: string;
-  city: string;
-  phone: string;
-  orderItems: Array<{
+  status: string;
+  orderItems: {
     id: string;
     quantity: number;
     price: number;
@@ -32,39 +25,50 @@ interface Order {
       id: string;
       nombre: string;
     };
-  }>;
+  }[];
 }
 
-export const PlaceOrder = () => {
+interface PlaceOrderProps {
+  initialOrderId?: string;
+}
+
+export default function PlaceOrder({ initialOrderId }: PlaceOrderProps) {
+  const [orderId, setOrderId] = useState<string | null>(initialOrderId || null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [orderId, setOrderId] = useState<string>("");
   const [order, setOrder] = useState<Order | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   const products = useStore((state) => state.products);
-  const getTotalPrice = useStore((state) => state.getTotalPrice);
   const address = useAddressStore((state) => state.address);
-  const getShippingCost = useShippingStore((state) => state.getShippingCost);
-
-  const subtotal = getTotalPrice();
+  const { getShippingCost } = useShippingStore();
   const shippingCost = getShippingCost();
+
+  const subtotal = useStore((state) => state.getTotalPrice());
   const total = subtotal + shippingCost;
 
   useEffect(() => {
-    const createOrder = async () => {
-      if (isLoading || orderId) return;
+    setMounted(true);
+  }, []);
 
-      setIsLoading(true);
-      setError(null);
+  useEffect(() => {
+    if (!mounted) return;
+
+    const createOrder = async () => {
+      if (!products.length || !address || orderId) return;
 
       try {
-        if (!address) {
-          setError("Please provide shipping address");
+        setIsLoading(true);
+        setError(null);
+
+        // Check if an order already exists for this address
+        const existingOrder = await findPendingOrder(products, address);
+        if (existingOrder) {
+          setOrderId(existingOrder.id);
           return;
         }
 
-        const result = await placeOrder(products, address);
-
+        const result = await placeOrder(products, address, shippingCost);
         if (!result.ok) {
           setError(result.message || "Error placing order");
           return;
@@ -72,94 +76,99 @@ export const PlaceOrder = () => {
 
         setOrderId(result.order!.id);
       } catch (error) {
-        console.error(error);
-        setError("Error placing order. Please try again.");
+        console.error('Error creating order:', error);
+        setError('Error al crear la orden. Por favor, intenta de nuevo.');
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (products.length > 0 && address && !orderId) {
-      createOrder();
-    }
-  }, [products, address, isLoading, orderId]);
+    createOrder();
+  }, [products, address, orderId, shippingCost, mounted]);
 
   useEffect(() => {
+    if (!mounted) return;
+
     const fetchOrder = async () => {
       if (!orderId) return;
 
       try {
         const orderData = await getOrderById(orderId);
+        if (!orderData) {
+          throw new Error('Order not found');
+        }
         setOrder(orderData);
       } catch (error) {
-        console.error("Error fetching order:", error);
+        console.error('Error fetching order:', error);
+        setError('Error al obtener la orden. Por favor, intenta de nuevo.');
       }
     };
 
     fetchOrder();
-  }, [orderId]);
+  }, [orderId, mounted]);
 
-  if (products.length === 0) {
+  if (!mounted) {
+    return null;
+  }
+
+  if (isLoading) {
     return (
-      <div className="text-center py-10">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">
-          Your cart is empty
-        </h2>
-        <p className="text-gray-600">
-          Add some products to your cart to place an order.
-        </p>
+      <div className="flex items-center justify-center p-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-10">
-        <h2 className="text-2xl font-bold mb-4 text-red-600">Error</h2>
-        <p className="text-gray-600">{error}</p>
+      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <strong className="font-bold">Error: </strong>
+        <span className="block sm:inline">{error}</span>
       </div>
     );
   }
 
-  if (isLoading) {
-    return (
-      <div className="text-center py-10">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">Processing...</h2>
-      </div>
-    );
+  if (!orderId) {
+    return null;
   }
 
   return (
-    <div className="mt-10">
-      <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-        <p className="text-gray-600">
-          <span className="font-medium">Order ID:</span> {orderId}
-        </p>
-        {order?.status === "PENDING" && (
-          <p className="text-white-600 m-2">
-            <span className="font-medium bg-red-400 p-2 rounded-md">
-              NO PAGADA
-            </span>
-          </p>
-        )}
-        {order?.status === "PAID" && (
-          <p className=" text-green-600">
-            <span className="font-medium">Status: Pagada</span>
-          </p>
-        )}
+    <div className="space-y-4">
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Resumen del Pedido</h3>
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <span className="text-gray-600">Subtotal:</span>
+            <span className="font-medium">${formatCurrency(subtotal)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Costo de envío:</span>
+            <span className="font-medium">${formatCurrency(shippingCost)}</span>
+          </div>
+          <div className="border-t border-gray-200 pt-2 mt-2">
+            <div className="flex justify-between">
+              <span className="text-lg font-bold text-gray-900">Total:</span>
+              <span className="text-lg font-bold text-gray-900">${formatCurrency(total)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Estado del Pedido</h3>
         <p className="text-gray-600">
-          <span className="font-medium">Total a pagar:</span> $
-          {formatCurrency(total)}
+          ID de la orden: <span className="font-medium">{orderId}</span>
         </p>
+        {order && (
+          <p className="text-gray-600 mt-2">
+            Estado: <span className="font-medium">{order.status}</span>
+          </p>
+        )}
       </div>
 
       <div className="flex justify-between">
         <PayUSection orderId={orderId} amount={total} />
       </div>
-      {/* <div>
-        <PaypalButton orderId={orderId} amount={getTotalPrice()} />
-      </div> */}
     </div>
   );
-};
+}

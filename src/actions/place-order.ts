@@ -37,7 +37,8 @@ export const placeOrder = async (
         address: string;
         city: string;
         phone: string;
-    }
+    },
+    shippingCost: number
 ): Promise<OrderResponse> => {
     try {
         if (!address) {
@@ -47,10 +48,13 @@ export const placeOrder = async (
             };
         }
 
-        // First check for existing pending order with same products and address
+        // Verificar si existe un pedido pendiente o pagado con los mismos productos y dirección
         const existingOrder = await prisma.order.findFirst({
             where: {
-                status: 'PENDING',
+                OR: [
+                    { status: 'PENDING' },
+                    { status: 'PAID' }
+                ],
                 firstName: address.firstName,
                 lastName: address.lastName,
                 email: address.email,
@@ -71,7 +75,7 @@ export const placeOrder = async (
         });
 
         if (existingOrder) {
-            // Verify if the order items match exactly
+            // Verificar si los items coinciden exactamente
             const orderItems = existingOrder.orderItems;
             const isExactMatch = storeProducts.every(product => {
                 const orderItem = orderItems.find(item => item.productId === product.id);
@@ -86,6 +90,7 @@ export const placeOrder = async (
             }
         }
 
+        // Si no hay pedido existente o no coincide exactamente, crear uno nuevo
         // Get products from database
         const products = await prisma.producto.findMany({
             where: {
@@ -104,22 +109,24 @@ export const placeOrder = async (
 
                 const total = product.price! * item.quantity;
                 totals.total += total;
-                // Calculate tax from total since it's already included
-                totals.tax += total * (0.1242 / 1.1242); // Extract tax from total price
-                totals.subTotal += total - (total * (0.1242 / 1.1242)); // Calculate subtotal by removing tax
+                totals.tax += total * (0.1242 / 1.1242);
+                totals.subTotal += total - (total * (0.1242 / 1.1242));
 
                 return totals;
             },
             { subTotal: 0, tax: 0, total: 0 }
         );
 
+        // Agregar el costo de envío al total
+        const totalWithShipping = total + shippingCost;
+
         return await prisma.$transaction(async (tx) => {
-            // Create order without reducing stock
             const order = await tx.order.create({
                 data: {
-                    total,
+                    total: totalWithShipping,
                     subTotal,
                     tax,
+                    shippingCost,
                     itemsInOrder,
                     status: OrderStatus.PENDING,
                     firstName: address.firstName,

@@ -35,14 +35,7 @@ export const getOrderById = async (id: string) => {
             product: {
               select: {
                 id: true,
-                nombre: true,
-                description: true,
-                price: true,
-                images: true,
-                inStock: true,
-                slug: true,
-                createdAt: true,
-                updatedAt: true
+                nombre: true
               }
             }
           }
@@ -114,6 +107,27 @@ export const findPendingOrder = async (
 
 export const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
   try {
+    // Obtener el pedido actual para verificar su estado
+    const currentOrder = await prisma.order.findUnique({
+      where: { id: orderId }
+    });
+
+    if (!currentOrder) {
+      throw new Error('Order not found');
+    }
+
+    // Validar que no se pueda cambiar a COMPLETED o DELIVERED automáticamente
+    if (status === OrderStatus.COMPLETED || status === OrderStatus.DELIVERED) {
+      // Verificar que el cambio sea manual (esto se puede implementar con un token o validación adicional)
+      // Por ahora, solo permitimos el cambio si el estado actual es el anterior válido
+      if (status === OrderStatus.COMPLETED && currentOrder.status !== OrderStatus.DELIVERED) {
+        throw new Error('Cannot mark order as COMPLETED without being DELIVERED first');
+      }
+      if (status === OrderStatus.DELIVERED && currentOrder.status !== OrderStatus.PAID) {
+        throw new Error('Cannot mark order as DELIVERED without being PAID first');
+      }
+    }
+
     const updatedOrder = await prisma.order.update({
       where: { id: orderId },
       data: { status },

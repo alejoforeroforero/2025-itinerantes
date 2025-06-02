@@ -103,6 +103,10 @@ export default async function OrderDetailsPage({
                     {formatCurrency(order.tax)}
                     <span className="text-sm text-gray-500 ml-2">(Incluidos en el precio)</span>
                   </p>
+                  <p>
+                    <span className="font-medium">Costo de envío:</span> $
+                    {formatCurrency(order.shippingCost)}
+                  </p>
                   <p className="text-lg font-bold text-[var(--primary)]">
                     <span className="font-medium">Total:</span> $
                     {formatCurrency(order.total)}

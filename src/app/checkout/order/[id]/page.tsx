@@ -1,7 +1,7 @@
 import { getOrderById } from "@/actions/order-actions";
 import { notFound } from "next/navigation";
 import { ProductsInCart } from "@/components/checkout/ProductsInCart";
-import { PlaceOrder } from "@/components/checkout/PlaceOrder";
+import PlaceOrder from "@/components/checkout/PlaceOrder";
 import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { CartClearer } from "./CartClearer";
@@ -53,46 +53,48 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
 
           {/* Products Section */}
           <div className="bg-white rounded-lg shadow-lg p-6">
-           
             {order.status === 'PAID' ? (
               // Show products from database for paid orders
               <div className="space-y-4">
-                {order.orderItems.map((item) => {
-                  console.log('Product item:', JSON.stringify(item, null, 2));
-                  return (
-                    <div
-                      key={item.id}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="relative w-12 h-12 rounded-md overflow-hidden">
-                          <Image
-                            src={item.product.images && item.product.images.length > 0 ? item.product.images[0] : DEFAULT_IMAGE}
-                            alt={item.product.nombre}
-                            fill
-                            className="object-cover"
-                            sizes="48px"
-                          />
-                        </div>
-                        <div>
-                          <h3 className="font-medium text-gray-900">{item.product.nombre}</h3>
-                          <p className="text-sm text-gray-600">
-                            {item.quantity} x ${formatCurrency(item.price)}
-                          </p>
-                        </div>
+                {order.orderItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="relative w-12 h-12 rounded-md overflow-hidden">
+                        <Image
+                          src={DEFAULT_IMAGE}
+                          alt={item.product.nombre}
+                          fill
+                          className="object-cover"
+                          sizes="48px"
+                        />
                       </div>
-                      <p className="font-medium text-gray-900">
-                        ${formatCurrency(item.price * item.quantity)}
-                      </p>
+                      <div>
+                        <h3 className="font-medium text-gray-900">{item.product.nombre}</h3>
+                        <p className="text-sm text-gray-600">
+                          {item.quantity} x ${formatCurrency(item.price)}
+                        </p>
+                      </div>
                     </div>
-                  );
-                })}
+                    <p className="font-medium text-gray-900">
+                      ${formatCurrency(item.price * item.quantity)}
+                    </p>
+                  </div>
+                ))}
                 <div className="border-t border-gray-200 pt-4 mt-4">
                   <div className="flex justify-between items-center">
                     <p className="text-gray-600">Total de productos: {order.itemsInOrder}</p>
-                    <p className="text-xl font-bold text-gray-900">
-                      Subtotal: ${formatCurrency(order.total)}
-                    </p>
+                    <p className="text-gray-600">Subtotal: ${formatCurrency(order.subTotal)}</p>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <p className="text-gray-600">Costo de envío:</p>
+                    <p className="text-gray-600">${formatCurrency(order.shippingCost)}</p>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-gray-200">
+                    <p className="text-xl font-bold text-gray-900">Total:</p>
+                    <p className="text-xl font-bold text-gray-900">${formatCurrency(order.total)}</p>
                   </div>
                 </div>
               </div>
@@ -120,7 +122,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
           {/* Payment Section - Only show if order is pending */}
           {order.status === 'PENDING' && (
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <PlaceOrder />
+              <PlaceOrder initialOrderId={order.id} />
             </div>
           )}
 
