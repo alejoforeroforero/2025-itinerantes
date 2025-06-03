@@ -19,9 +19,6 @@ export function CategoryTabs({ categories, totalProducts }: CategoryTabsProps) {
   const pathname = usePathname();
   const isAllProducts = pathname === '/' || pathname === '/productos';
 
-  console.log('Current pathname:', pathname);
-  console.log('Categories:', categories);
-
   return (
     <div className="w-full bg-white">
       <div className="container mx-auto">

@@ -11,3 +11,5 @@ export * from "./checkout/AddressForm";
 export * from "./providers/Providers";
 export * from './website/products/CategoryTabs';
 export * from './website/products/Pagination';
+export * from './website/text-editor/About';
+export * from './website/text-editor/AboutAdmin';

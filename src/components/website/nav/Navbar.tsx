@@ -28,6 +28,12 @@ export const Navbar = async () => {
             >
               Productos
             </Link>
+            <Link
+              href="/sobre-nosotros"
+              className="text-[var(--primary)] hover:text-[var(--accent)] transition-colors duration-200 uppercase text-sm font-medium tracking-wide"
+            >
+              Sobre Nosotros
+            </Link>
 
             {/* Cart Icon */}
             <Link href="/carrito" className="relative">
