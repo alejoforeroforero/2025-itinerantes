@@ -19,12 +19,12 @@ export async function getAbout() {
   }
 }
 
-export async function updateAbout(formData: FormData) {
+export async function updateAbout(title: string, content: string) {
   try {
     const about = await prisma.about.findFirst();
     const data = {
-      title: formData.get('title') as string,
-      content: formData.get('content') as string,
+      title: title,
+      content: content
     };
 
     await schema.validate(data);
@@ -57,23 +57,7 @@ export async function updateAbout(formData: FormData) {
       success: false,
       message: null,
       error: error instanceof Error ? error.message : "Error al actualizar el contenido",
-      fieldData: {
-        title: formData.get('title') as string,
-        content: formData.get('content') as string,
-      }
     };
   }
 }
 
-export const updateAboutContent = async (content: string) => {
-  const existingAbout = await prisma.about.findFirst();
-  if (!existingAbout) throw new Error("About not found");
-
-  const about = await prisma.about.update({
-    where: { id: existingAbout.id },
-    data: { content }
-  });
-
-  revalidatePath("/admin/about");
-  return about;
-};

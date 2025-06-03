@@ -1,6 +1,5 @@
 import { LexicalEditor, SerializedEditorState } from "lexical";
 
-
 export const DEFAULT_CONTENT: SerializedEditorState = {
   root: {
     children: [
@@ -37,7 +36,7 @@ export async function loadContent(
   serializedContent: SerializedEditorState
 ) {
   const updatedContent = await rebuildJson(serializedContent);
-  
+
   editor.update(() => {
     const state = editor.parseEditorState(JSON.stringify(updatedContent));
     editor.setEditorState(state);
@@ -45,14 +44,5 @@ export async function loadContent(
 }
 
 async function rebuildJson(serializedContent: SerializedEditorState) {
-  // Traverse through all children recursively
-  if (serializedContent.root?.children) {
-    for (let i = 0; i < serializedContent.root.children.length; i++) {
-      const node = serializedContent.root.children[i];
-      console.log(node);
-  
-      
-    }
-  }
   return serializedContent;
 }

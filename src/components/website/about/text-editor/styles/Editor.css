@@ -46,7 +46,7 @@ pre::-webkit-scrollbar-thumb {
   border-radius: 2px;
   max-width: 1020px;
   width: 100%; 
-  color: #333333;
+  color: #000;
   position: relative;
   line-height: 20px;
   font-weight: 400;
@@ -56,24 +56,24 @@ pre::-webkit-scrollbar-thumb {
 }
 
 .editor-inner {
-  border: 1px solid #e0e0e0;
-  background: #ffffff;
+  border:1px solid #ccc;
+  background: #fff;
   position: relative;
-  width: 100%;
+  width: 100%; /* Aseguramos que ocupe todo el ancho del contenedor */
   min-width: 100%;
-  display: block;
+  display: block; /* Añadimos esto para asegurar que se comporte como bloque */
 }
 
 .editor-input {
   min-height: 150px;
   resize: none;
   font-size: 15px;
-  caret-color: #333333;
+  caret-color: rgb(5, 5, 5);
   position: relative;
   tab-size: 1;
   outline: 0;
   padding: 15px 10px;
-  color: #333333;
+  caret-color: #444;
 }
 
 .editor-placeholder {
@@ -91,7 +91,7 @@ pre::-webkit-scrollbar-thumb {
 
 .editor-heading-h1 {
   font-size: 24px;
-  color: #333333;
+  color: rgb(5, 5, 5);
   font-weight: 400;
   margin: 0;
   margin-bottom: 12px;
@@ -100,7 +100,7 @@ pre::-webkit-scrollbar-thumb {
 
 .editor-heading-h2 {
   font-size: 15px;
-  color: #666666;
+  color: rgb(101, 103, 107);
   font-weight: 700;
   margin: 0;
   margin-top: 10px;
@@ -112,8 +112,8 @@ pre::-webkit-scrollbar-thumb {
   margin: 0;
   margin-left: 20px;
   font-size: 15px;
-  color: #666666;
-  border-left-color: #e0e0e0;
+  color: rgb(101, 103, 107);
+  border-left-color: rgb(206, 208, 212);
   border-left-width: 4px;
   border-left-style: solid;
   padding-left: 16px;
@@ -141,7 +141,7 @@ pre::-webkit-scrollbar-thumb {
 
 .editor-text-bold {
   font-weight: bold;
-  color: #333333;
+  color: #fff;
 }
 
 .editor-text-italic {
@@ -161,15 +161,14 @@ pre::-webkit-scrollbar-thumb {
 }
 
 .editor-text-code {
-  background-color: #f5f5f5;
+  background-color: rgb(240, 242, 245);
   padding: 1px 0.25rem;
   font-family: Menlo, Consolas, Monaco, monospace;
   font-size: 94%;
-  color: #333333;
 }
 
 .editor-link {
-  color: #2563eb;
+  color: rgb(33, 111, 219);
   text-decoration: none;
 }
 
@@ -177,14 +176,14 @@ pre::-webkit-scrollbar-thumb {
   margin: 20px auto;
   border-radius: 2px;
   max-width: 1100px;
-  color: #333333;
+  color: #000;
   position: relative;
   line-height: 1.7;
   font-weight: 400;
 }
 
 .editor-shell .editor-container {
-  background: #ffffff;
+  background: #fff;
   position: relative;
   display: block;
   border-bottom-left-radius: 10px;
@@ -201,8 +200,8 @@ pre::-webkit-scrollbar-thumb {
 }
 
 .editor-scroller {
-  min-height: 150px;
-  max-width: 100%;
+  min-height: 300px; /* Increased from 150px */
+  max-height: 800px; /* Increased from 500px */
   border: 0;
   display: flex;
   position: relative;
@@ -221,8 +220,8 @@ pre::-webkit-scrollbar-thumb {
   border: none;
   cursor: pointer;
   outline: none;
-  box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.1);
-  background-color: #f5f5f5;
+  box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.3);
+  background-color: #444;
 }
 
 .editor-dev-button::after {
@@ -238,11 +237,11 @@ pre::-webkit-scrollbar-thumb {
 }
 
 .editor-dev-button:hover {
-  background-color: #e0e0e0;
+  background-color: #555;
 }
 
 .editor-dev-button.active {
-  background-color: #ef4444;
+  background-color: rgb(233, 35, 35);
 }
 
 .editor-shell span.editor-image {
@@ -390,9 +389,9 @@ pre::-webkit-scrollbar-thumb {
 
 .editor-shell .inline-editor-image .image-caption-container {
   display: block;
-  background-color: #f5f5f5;
+  background-color: #f4f4f4;
   min-width: 100%;
-  color: #333333;
+  color: #000;
   overflow: hidden;
 }
 
@@ -405,8 +404,8 @@ pre::-webkit-scrollbar-thumb {
 }
 
 .editor-user {
-  color: #ef4444;
-  background-color: #f5f5f5;
+  color:red;
+  background-color: #000;
 }
 
 iframe {
@@ -477,13 +476,12 @@ iframe {
 .editor-list-item-unchecked:before {
   border: 1px solid #999;
   border-radius: 2px;
-  background-color: #ffffff;
 }
 
 .editor-list-item-checked:before {
-  border: 1px solid #2563eb;
+  border: 1px solid rgb(61, 135, 245);
   border-radius: 2px;
-  background-color: #2563eb;
+  background-color: #3d87f5;
   background-repeat: no-repeat;
 }
 
@@ -507,7 +505,7 @@ iframe {
   position: absolute;
   bottom: 20px;
   right: 20px;
-  background-color: #2563eb;
+  background-color: #3b82f6;
   color: white;
   padding: 8px 16px;
   border-radius: 6px;
@@ -524,7 +522,7 @@ iframe {
 }
 
 .editor-preview-button:hover {
-  background-color: #1d4ed8;
+  background-color: #2563eb;
   transform: translateY(-1px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -586,10 +584,10 @@ iframe {
   right: 0;
   padding: 0;
   margin: 0;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid #fff;
   background-color: rgba(255, 255, 255, 0.9);
   min-width: 100px;
-  color: #333333;
+  color: #000;
   overflow: hidden;
 }
 
@@ -677,9 +675,9 @@ img {
 
 .editor-number {
   padding: 10px;
-  background-color: #dcfce7;
+  background-color: rgb(28, 232, 96);
   border-radius: 4px;
-  color: #333333;
+  color: #000;
   margin: 8px 0;
 }
 

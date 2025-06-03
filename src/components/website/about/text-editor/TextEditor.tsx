@@ -1,21 +1,37 @@
 //Context
 
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { ToolbarProvider } from './context/ToolbarContext'
 
 //Lexical Plugins
-import ToolbarPlugin from './ToolbarPlugin'
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin'
 import { LexicalComposer } from '@lexical/react/LexicalComposer'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary'
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
+import { ListPlugin } from '@lexical/react/LexicalListPlugin'
 
-import { editorNodes } from './nodes/LexicalNodes/LexicalNodes'
+//Custom Plugins
+// import ToolbarPlugin from "./plugins/ToolbarPlugin";
+import ToolbarPlugin from './ToolbarPlugin'
+import LinkPlugin from './plugins/LinkPlugin'
+import { CheckListPlugin } from './plugins/CheckListPlugin/LexicalCheckListPlugin'
+import YouTubePlugin from './plugins/YouTubePlugin'
+import AutoEmbedPlugin from './plugins/AutoEmbedPlugin'
+import DraggableBlockPlugin from './plugins/DraggableBlockPlugin'
+import FloatingLinkEditorPlugin from './plugins/FloatingLinkEditorPlugin'
+
+
+
+//import TreeViewPlugin from "./plugins/TreeViewPlugin/TreeViewPlugin";
 
 import { PreviewButton } from './ui/PreviewButton'
 
+//Lexical Nodes
+import { editorNodes } from './nodes/LexicalNodes/LexicalNodes'
+
+//Theme
 import TextEditorTheme from './TextEditorTheme'
 
 //Styles
@@ -28,7 +44,7 @@ import './ui/ImageResizer.css'
 
 import { DEFAULT_CONTENT, loadContent } from './utils/convertFromJson'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-
+import ImagesPlugin from './plugins/ImagesPlugin'
 
 
 interface TextEditorProps {
@@ -49,11 +65,15 @@ const editorConfig = {
 
 export const TextEditor = ({ initialContent, onChange }: TextEditorProps) => {
 
+  const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false)
+  const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null)
+
   const onRef = (_floatingAnchorElem: HTMLDivElement) => {
     if (_floatingAnchorElem !== null) {
-      //setFloatingAnchorElem(_floatingAnchorElem)
+      setFloatingAnchorElem(_floatingAnchorElem)
     }
   }
+
   // Añadir un plugin para manejar los cambios
   const OnChangePlugin = ({ onChange }: { onChange?: (content: string) => void }) => {
     const [editor] = useLexicalComposerContext()
@@ -72,7 +92,7 @@ export const TextEditor = ({ initialContent, onChange }: TextEditorProps) => {
 
   return (
     <ToolbarProvider>
-      <LexicalComposer initialConfig={editorConfig}>       
+      <LexicalComposer initialConfig={editorConfig}>
         <div className='editor-container'>
           <ToolbarPlugin />
           <div className='editor-inner'>
@@ -84,17 +104,34 @@ export const TextEditor = ({ initialContent, onChange }: TextEditorProps) => {
                       className='editor-input'
                       aria-placeholder={placeholder}
                       placeholder={<div className='editor-placeholder'>{placeholder}</div>}
-                    />                   
+                    />
+                    <PreviewButton />
                   </div>
-                  <PreviewButton />
                 </div>
               }
               ErrorBoundary={LexicalErrorBoundary}
             />
             <InitialContentPlugin initialContent={initialContent || JSON.stringify(DEFAULT_CONTENT)} />
+            {/* Añadir el plugin de cambios */}
             <OnChangePlugin onChange={onChange} />
             <HistoryPlugin />
-            <AutoFocusPlugin />        
+            <AutoFocusPlugin />
+            <ListPlugin />
+            <CheckListPlugin />
+            <ImagesPlugin />
+       
+
+            <LinkPlugin hasLinkAttributes={true} />
+            {floatingAnchorElem && (
+              <FloatingLinkEditorPlugin
+                anchorElem={floatingAnchorElem}
+                isLinkEditMode={isLinkEditMode}
+                setIsLinkEditMode={setIsLinkEditMode}
+              />
+            )}
+            <AutoEmbedPlugin />
+            {floatingAnchorElem && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}
+            <YouTubePlugin />
           </div>
         </div>
       </LexicalComposer>

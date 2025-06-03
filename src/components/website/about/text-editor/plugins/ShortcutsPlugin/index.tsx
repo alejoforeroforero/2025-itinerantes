@@ -32,7 +32,7 @@ import {
   formatQuote,
   updateFontSize,
   UpdateFontSizeType,
-} from '../../ToolbarPlugin/utils';
+} from '../ToolbarPlugin/utils';
 import {
   isCapitalize,
   isCenterAlign,

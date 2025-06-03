@@ -6,6 +6,8 @@
  *
  */
 
+'use client'
+
 import type {JSX} from 'react';
 
 import {useCallback, useMemo, useState} from 'react';

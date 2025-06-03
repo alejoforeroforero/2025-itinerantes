@@ -47,7 +47,8 @@ const TextEditorTheme = {
     base: 'editor-embed-block',
     focus: 'editor-embed-block-focus',
   },
-  number:'editor-number'
+  number:'editor-number',
+  scorePreview:'editor-score-preview'
 };
 
 export default TextEditorTheme;

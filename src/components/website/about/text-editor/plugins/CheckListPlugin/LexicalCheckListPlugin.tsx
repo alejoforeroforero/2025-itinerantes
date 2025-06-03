@@ -181,7 +181,7 @@ function handleCheckItemEvent(event: PointerEvent, callback: () => void) {
 
   const parentNode = target.parentNode;
 
-  // @ts-expect-error internal field
+  // @ts-ignore internal field
   if (!parentNode || parentNode.__lexicalListType !== 'check') {
     return;
   }
@@ -230,7 +230,7 @@ function getActiveCheckListItem(): HTMLElement | null {
   return isHTMLElement(activeElement) &&
     activeElement.tagName === 'LI' &&
     activeElement.parentNode != null &&
-    // @ts-expect-error internal field
+    // @ts-ignore internal field
     activeElement.parentNode.__lexicalListType === 'check'
     ? activeElement
     : null;
