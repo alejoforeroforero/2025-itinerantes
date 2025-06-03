@@ -1,4 +1,4 @@
-import About from "@/components/website/text-editor/About";
+import { About } from "@/components/";
 
 export default function AboutPage() {
   return (
