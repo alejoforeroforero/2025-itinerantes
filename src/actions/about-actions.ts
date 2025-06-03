@@ -64,3 +64,16 @@ export async function updateAbout(formData: FormData) {
     };
   }
 }
+
+export const updateAboutContent = async (content: string) => {
+  const existingAbout = await prisma.about.findFirst();
+  if (!existingAbout) throw new Error("About not found");
+
+  const about = await prisma.about.update({
+    where: { id: existingAbout.id },
+    data: { content }
+  });
+
+  revalidatePath("/admin/about");
+  return about;
+};

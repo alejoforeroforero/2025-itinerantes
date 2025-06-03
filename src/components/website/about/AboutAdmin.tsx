@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { updateAbout } from "@/actions/about-actions";
+import { TextEditor } from "./text-editor/TextEditor";
 
 interface AboutAdminProps {
   title: string;
@@ -64,6 +65,18 @@ export const AboutAdmin = ({ title, content }: AboutAdminProps) => {
           </button>
         </div>
       </form>
+      <div>
+        <label
+          htmlFor="bio"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+        >
+          Bio
+        </label>
+
+        <TextEditor 
+          initialContent={data?.fieldData?.content}
+        />
+      </div>
     </div>
   );
 };

@@ -13,8 +13,6 @@ export async function SummaryDashboard() {
   const categories = categoriesResponse.data;
   const allProducts = productsResponse.data;
 
-  console.log('Products data:', allProducts);
-
   return (
     <div className="space-y-8">
       {/* Categories Section */}
@@ -60,7 +58,6 @@ export async function SummaryDashboard() {
               </thead>
               <tbody>
                 {allProducts.map((product) => {
-                  console.log('Rendering product:', product);
                   return (
                     <tr key={product.id} className="border-b border-gray-200">
                       <td className="p-4 text-[var(--foreground)]">{product.nombre}</td>
