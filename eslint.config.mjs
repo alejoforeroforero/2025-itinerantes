@@ -10,6 +10,28 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  {
+    ignores: [
+      // Ignore text editor components as they are third-party
+      "src/components/website/about/text-editor/**/*",
+      // Ignore build output
+      ".next/**/*",
+      "out/**/*",
+      "build/**/*",
+      "dist/**/*",
+      // Ignore dependencies
+      "node_modules/**/*",
+      // Ignore generated files
+      "**/*.generated.*",
+      "**/*.min.js",
+      // Ignore test files
+      "**/*.test.*",
+      "**/*.spec.*",
+      // Ignore environment files
+      ".env*",
+      ".env.*"
+    ]
+  },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 ];
 
