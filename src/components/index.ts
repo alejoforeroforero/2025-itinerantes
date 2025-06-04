@@ -6,6 +6,7 @@ export * from "./admin/summary/SummaryDashboard";
 export * from "./website/home/ListProducts";
 export * from "./website/home/Greet";
 export * from "./website/nav/Navbar";
+export * from "./website/nav/NavbarContainer";
 export * from "./auth/AuthProvider";
 export * from "./checkout/AddressForm";
 export * from "./providers/Providers";

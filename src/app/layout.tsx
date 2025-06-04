@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Navbar } from "@/components";
+import { NavbarContainer } from "@/components";
 import { Providers } from "@/components";
 import { Geist, Geist_Mono } from "next/font/google";
 import { getCategories } from "@/actions/category-actions";
@@ -65,7 +65,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <Navbar />
+          <NavbarContainer />
           <div className="sticky top-0 z-10 bg-white shadow-sm">
             <CategoryTabs categories={categories} totalProducts={products.length} />
           </div>
