@@ -1,9 +1,10 @@
-import type {
+import {
   NodeKey,
   LexicalEditor,
   LexicalCommand,
   RangeSelection,
   NodeSelection,
+  DecoratorNode,
 } from "lexical";
 import type { JSX } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -29,17 +30,23 @@ import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import ImageResizer from "../ui/ImageResizer";
 import { $isImageNode } from "./ImageNode";
 import { mergeRegister } from "@lexical/utils";
+import Image from 'next/image';
+import { MutableRefObject } from 'react';
 
 // Cache para las imágenes
-const imageCache = new Set();
+const imageCache = new Set<string>();
 
 export const RIGHT_CLICK_IMAGE_COMMAND: LexicalCommand<MouseEvent> =
   createCommand("RIGHT_CLICK_IMAGE_COMMAND");
 
 function useSuspenseImage(src: string) {
   if (!imageCache.has(src)) {
+    if (typeof window === 'undefined' || typeof window.Image === 'undefined') {
+      // On SSR, just skip preloading
+      return;
+    }
     throw new Promise((resolve) => {
-      const img = new Image();
+      const img = new window.Image();
       img.src = src;
       img.onload = () => {
         imageCache.add(src);
@@ -64,25 +71,48 @@ function LazyImage({
   altText: string;
   className: string | null;
   height: "inherit" | number;
-  imageRef: { current: null | HTMLImageElement };
+  imageRef: MutableRefObject<HTMLImageElement | null>;
   maxWidth: number;
   src: string;
   width: "inherit" | number;
 }): JSX.Element {
   useSuspenseImage(src);
+
+  // Si es base64, usa <img>
+  if (src.startsWith('data:')) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        ref={imageRef}
+        className={className || undefined}
+        src={src}
+        alt={altText || 'Imagen'}
+        style={{
+          maxWidth,
+          objectFit: 'cover',
+          width: width === 'inherit' ? '100%' : width,
+          height: height === 'inherit' ? 'auto' : height,
+        }}
+      />
+    );
+  }
+
+  // Si es URL normal, usa <Image />
   return (
-    <img
-      className={className || undefined}
-      src={src}
-      alt={altText}
-      ref={imageRef}
-      style={{
-        height,
-        maxWidth,
-        width,
-      }}
-      draggable="false"
-    />
+    <div className="relative" style={{ width: width === 'inherit' ? '100%' : width, height: height === 'inherit' ? 'auto' : height }}>
+      <Image
+        className={className || undefined}
+        src={src}
+        alt={altText || 'Imagen'}
+        ref={imageRef as MutableRefObject<HTMLImageElement>}
+        fill
+        style={{
+          maxWidth,
+          objectFit: 'cover'
+        }}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      />
+    </div>
   );
 }
 
@@ -348,4 +378,31 @@ export default function ImageComponent({
       </>
     </Suspense>
   );
+}
+
+export class ImageNode extends DecoratorNode<JSX.Element> {
+  __src: string;
+  __altText: string;
+  __maxWidth: number;
+
+  static getType(): string {
+    return 'image';
+  }
+
+  static clone(node: ImageNode): ImageNode {
+    return new ImageNode(node.__src, node.__altText, node.__maxWidth, node.getKey());
+  }
+
+  constructor(src: string, altText: string, maxWidth: number, key?: NodeKey) {
+    super(key);
+    this.__src = src;
+    this.__altText = altText;
+    this.__maxWidth = maxWidth;
+  }
+
+  // ... existing code ...
+}
+
+export function $createImageNode(src: string, altText: string, maxWidth: number): ImageNode {
+  return new ImageNode(src, altText, maxWidth);
 }

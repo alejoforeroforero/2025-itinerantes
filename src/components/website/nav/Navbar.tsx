@@ -51,6 +51,38 @@ export const Navbar = ({ title, isAdmin }: NavbarProps) => {
               </span>
             </Link>
 
+            {/* Desktop Navigation - Centered */}
+            <div className="hidden sm:flex items-center justify-center flex-1">
+              <div className="flex items-center space-x-8">
+                <Link
+                  href="/"
+                  className={`text-[var(--primary)] hover:text-[var(--accent)] transition-colors duration-200 uppercase text-sm tracking-wide ${
+                    isActive('/') ? 'font-bold' : 'font-medium'
+                  }`}
+                >
+                  Productos
+                </Link>
+                <Link
+                  href="/sobre-nosotros"
+                  className={`text-[var(--primary)] hover:text-[var(--accent)] transition-colors duration-200 uppercase text-sm tracking-wide ${
+                    isActive('/sobre-nosotros') ? 'font-bold' : 'font-medium'
+                  }`}
+                >
+                  Sobre Nosotros
+                </Link>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    className={`text-[var(--primary)] hover:text-[var(--accent)] transition-colors duration-200 uppercase text-sm tracking-wide ${
+                      isActive('/admin') ? 'font-bold' : 'font-medium'
+                    }`}
+                  >
+                    Admin
+                  </Link>
+                )}
+              </div>
+            </div>
+
             {/* Right side items */}
             <div className="flex items-center space-x-4">
               {/* Cart Icon - Always visible */}
@@ -111,36 +143,6 @@ export const Navbar = ({ title, isAdmin }: NavbarProps) => {
                   </svg>
                 )}
               </button>
-            </div>
-
-            {/* Desktop Navigation */}
-            <div className="hidden sm:flex items-center space-x-8">
-              <Link
-                href="/"
-                className={`text-[var(--primary)] hover:text-[var(--accent)] transition-colors duration-200 uppercase text-sm tracking-wide ${
-                  isActive('/') ? 'font-bold' : 'font-medium'
-                }`}
-              >
-                Productos
-              </Link>
-              <Link
-                href="/sobre-nosotros"
-                className={`text-[var(--primary)] hover:text-[var(--accent)] transition-colors duration-200 uppercase text-sm tracking-wide ${
-                  isActive('/sobre-nosotros') ? 'font-bold' : 'font-medium'
-                }`}
-              >
-                Sobre Nosotros
-              </Link>
-              {isAdmin && (
-                <Link
-                  href="/admin"
-                  className={`text-[var(--primary)] hover:text-[var(--accent)] transition-colors duration-200 uppercase text-sm tracking-wide ${
-                    isActive('/admin') ? 'font-bold' : 'font-medium'
-                  }`}
-                >
-                  Admin
-                </Link>
-              )}
             </div>
           </div>
         </div>

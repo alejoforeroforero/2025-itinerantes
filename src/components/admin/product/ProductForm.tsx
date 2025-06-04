@@ -4,6 +4,7 @@ import { createProduct, updateProduct, uploadImage } from "@/actions/product-act
 import { useActionState } from "react";
 import { useState } from "react";
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
+import Image from 'next/image';
 
 interface Product {
   id: string;
@@ -260,11 +261,15 @@ export function ProductForm({ products, categories }: ProductFormProps) {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
               {uploadedImages.map((imageUrl, index) => (
                 <div key={index} className="relative group">
-                  <img
-                    src={imageUrl}
-                    alt={`Imagen ${index + 1}`}
-                    className="w-full h-32 object-cover rounded-lg"
-                  />
+                  <div className="relative w-full h-32">
+                    <Image
+                      src={imageUrl}
+                      alt={`Imagen ${index + 1}`}
+                      fill
+                      className="object-cover rounded-lg"
+                      sizes="(max-width: 768px) 50vw, 33vw"
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={() => removeImage(index)}

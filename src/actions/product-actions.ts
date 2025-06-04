@@ -53,11 +53,13 @@ export const uploadImage = async (file: File): Promise<string> => {
         {
           folder: 'itinerantes',
           resource_type: 'auto',
+          timeout: 60000, // Aumentar el timeout a 60 segundos
+          chunk_size: 6000000, // Aumentar el tamaño del chunk a 6MB
         },
         (error, result) => {
           if (error) {
             console.error('Cloudinary upload error:', error);
-            reject(new Error('Error uploading to Cloudinary'));
+            reject(new Error(`Error uploading to Cloudinary: ${error.message}`));
           }
           resolve(result);
         }

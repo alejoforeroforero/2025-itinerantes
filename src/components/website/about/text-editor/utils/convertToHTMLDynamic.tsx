@@ -1,4 +1,5 @@
 import React, { JSX } from "react";
+import Image from "next/image";
 
 interface BaseNode {
   type: string;
@@ -291,7 +292,7 @@ function generateHTML(node: Node): JSX.Element | JSX.Element[] | string {
 
       const imageProps = {
         src: node.src,
-        alt: node.altText,
+        alt: node.altText || '',
         style: imageStyle,
         ...(node.width && node.width !== "inherit"
           ? { width: node.width }
@@ -301,7 +302,23 @@ function generateHTML(node: Node): JSX.Element | JSX.Element[] | string {
           : {}),
       };
 
-      const imageElement = <img {...imageProps} />;
+      // Use Next.js Image for non-base64 images
+      const imageElement = node.src.startsWith('data:')
+        ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img {...imageProps} alt={node.altText || ''} />
+        ) : (
+          <Image
+            {...imageProps}
+            alt={node.altText || ''}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            style={{
+              ...imageStyle,
+              objectFit: 'cover'
+            }}
+          />
+        );
 
       // If there's a caption and showCaption is true, wrap in figure
       if (node.showCaption && node.caption) {
