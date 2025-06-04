@@ -23,14 +23,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": [
-    "node_modules",
-    "src/components/website/about/text-editor/**/*",
-    ".next",
-    "out",
-    "build",
-    "dist",
-    "**/*.test.*",
-    "**/*.spec.*"
-  ]
+  "exclude": ["node_modules"]
 }
