@@ -142,4 +142,11 @@ model About {
   updatedAt DateTime @updatedAt
 }
 
+model SiteSettings {
+  id         Int      @id @default(1)
+  faviconUrl String?
+  logoUrl    String?
+  updatedAt  DateTime @updatedAt
+}
+
 

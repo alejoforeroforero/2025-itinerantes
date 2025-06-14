@@ -34,6 +34,9 @@ export default async function AdminLayout({
         <Link className="link-nav" href="/admin/about">
           About
         </Link>
+        <Link className="link-nav" href="/admin/settings">
+          Configuración
+        </Link>
       </header>
       <main className="mt-4">{children}</main>
     </div>

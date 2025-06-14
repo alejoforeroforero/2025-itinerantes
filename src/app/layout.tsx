@@ -6,6 +6,8 @@ import { getCategories } from "@/actions/category-actions";
 import { getProducts } from "@/actions/product-actions";
 import { CategoryTabs } from "@/components/website/products/CategoryTabs";
 import "./globals.css";
+import { Toaster } from "sonner";
+import { getSettings } from "@/actions/settings-actions";
 
 interface Category {
   id: string;
@@ -24,14 +26,17 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    template: '%s | Itinerantes',
-    default: 'Itinerantes - Tienda Online',
-  },
-  description: 'Descubre nuestra colección de productos artesanales y únicos en Itinerantes.',
-  keywords: ['artesanías', 'productos artesanales', 'tienda online', 'compras'],
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+  
+  return {
+    title: "Itinerantes",
+    description: "Itinerantes - Tu plataforma de viajes",
+    icons: {
+      icon: settings?.faviconUrl || '/favicon.ico',
+    },
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -60,10 +65,8 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="es">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
           <NavbarContainer />
           <div className="sticky top-0 z-10 bg-white shadow-sm">
@@ -73,6 +76,7 @@ export default async function RootLayout({
             {children}
           </main>
         </Providers>
+        <Toaster />
       </body>
     </html>
   );
